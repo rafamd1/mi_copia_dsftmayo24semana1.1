@@ -1,0 +1,1 @@
+Krux.ns.datmean.kxjsonp_consent_set_2({"status":400,"body":{"dt":"kxcookie","settings":{"dc":1,"al":1,"tg":1,"cd":1,"sh":1,"re":1},"pr":"gdpr","code":"bad_request","idt":"device","idv":"","request_id":"1Af5fMEB0Npf5fKiNWiS6y","errors":{"idv":"no identifier found for user"},"timestamp":1645634902}});

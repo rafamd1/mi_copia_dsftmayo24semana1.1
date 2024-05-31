@@ -1,0 +1,3038 @@
+// Initialize code
+var r89 = r89 || {};
+
+// Set defaults
+r89.loaded = false;
+r89.processAds = true;
+r89.restrictedAds = false;
+r89.measuredAdLoad = false;
+
+if (window.top.location.href.indexOf('preview=1') > -1) {
+    r89.preview = true;
+}
+else {
+    r89.preview = false;
+}
+
+r89.gptPublisherInitialized = false;
+r89.window = window.top.document;
+r89.selectorWindow = r89.window;
+r89.head = window.top.document.head;
+
+r89.cmp = {
+    active: 0,
+    cookieConsent: true,
+    passed: false,
+    cookieName: "cmp_oil_passed",
+    cookieExpires: 365,
+    cookieExpiresMinimum: 60,
+    consentData: false,
+    consentString: false,
+    allowAuctionWithoutConsent: true,
+    setRequestNonPersonalizedAds: true
+};
+
+if (r89.preview) {
+    r89.browsi = false;
+}
+else {
+    r89.browsi = false;
+}
+
+r89.tracking = [];
+r89.timeouts = {
+    prebidServer: 600,
+    prebidCmp: 8000
+};
+
+r89.prebid = {
+    s2sConfig: {
+        accountId: 'e183ab24-374d-4e3d-91f8-8c22a397d405',
+        enabled: true,
+        bidders: ['openx'],
+        timeout: r89.timeouts.prebidServer,
+        adapter: 'prebidServer',
+        defaultVendor: 'appnexus'
+    },
+    priceGranularity: {
+        "buckets" : [
+            {
+                "precision": 2,
+                "max" : 3,
+                "increment" : 0.01
+            },
+            {
+                "max" : 8,
+                "increment" : 0.05
+            },
+            {
+                "max" : 20,
+                "increment" : 0.10
+            },
+            {
+                "max" : 25,
+                "increment" : 0.25
+            }
+        ]
+    },
+    bids: [],
+    adunitBids: [],
+    bidderCounts: []
+};
+r89.settings = {
+    performanceLogging: true,
+    performanceNow: performance.now(),
+    gamNetworkId: '15748617',
+    gamChildNetworkId: '3867361',
+    gamTagNetworkId: '15748617,3867361',
+    gamAdSlot: 'inbestiacom',
+    website: 'inbestia.com',
+    loopCount: 1,
+    hasAdsenseFallback: 0,
+    adsenseClientId: 'ca-pub-0679975395820445',
+    labelText: '▼ Publicidad por <a style="color:#999999; text-decoration:underline; display:inline;" href="https://refinery89.com/?utm_source=inbestia.com&utm_medium=referral&utm_campaign=Ad-label" target="_blank" rel="nofollow">Refinery89</a>',
+    labelStyle: {"color":"#999999","textAlign":"center","fontSize":"12px","lineHeight":"16px","margin":"0px","padding":"4px 0 3px 5px","fontFamily":"Arial"},
+    prioritizeCustomAdUnits: 0,
+    video: {
+        gamNetworkId: '15748617',
+        gamChildNetworkId: '3867361',
+        gamTagNetworkId: '15748617,3867361',
+        // buildVideoUrlBidders: ["appnexus"],
+        buildVideoUrlBidders: ["appnexus", "pubmatic"],
+        outstreamCollapseTime: 600,
+        labelText: '▼ Publicidad por <a style="color:#999999; text-decoration:underline; display:inline;" href="https://refinery89.com/?utm_source=inbestia.com&utm_medium=referral&utm_campaign=Ad-label" target="_blank" rel="nofollow">Refinery89</a>',
+        labelStyle: {"color":"#999999","textAlign":"center","fontSize":"12px","lineHeight":"16px","margin":"0px","padding":"4px 0 3px 5px","fontFamily":"Arial"},
+        sourceFile: "https://tags.refinery89.com/video/black.mp4",
+        adCancelTimeout: 3000,
+        startExpanded: false,
+        displayFallback: false,
+        hasPrebidVideoBid: false,
+        hasStarted: false,
+        hasEnded: false,
+        cornerScrollActive: false,
+        // prebidFloor: 10,
+        prebidFloor: 1.9,
+        imaLoaded: false,
+        callbackLoaded: false,
+        closeButtonTimeout: 5000,
+        inScreen: false,
+    },
+    stickyFooter: {
+        divIds: ['r89-desktop-billboard-low', 'r89-tablet-billboard-low', 'r89-mobile-sticky-footer', 'r89-desktop-billboard-low-1', 'r89-tablet-billboard-low-1', 'r89-mobile-sticky-footer-1'],
+        cookieName: 'r89_sticky_footer_timeout',
+        desktopCap: 60,
+        mobileCap: 60,
+        desktopTimeout: 0,
+        mobileTimeout: 0,
+        gamOrderIdsFilter: [2565064030, 2565063550, 2823227725, 2758760599, 2758307477],
+        prebidBidderCodesFilter: ['justpremium', 'seedtag'],
+        closeButtonClass: "r89-sticky-footer-close-button",
+        closeButtonAfter: 800,
+        maxHeight: "100px",
+    },
+    stickyHeader: {
+        divIds: [],
+        programmaticFilter: 1,
+        gamAdvertiserIdsFilter: [12032417, 4647425212, 4609559694, 4630125771],
+        gamOrderIdsFilter: [2682298498, 2423657881],
+        scrollingDistance: 2000,
+        backgroundColor: '#000000',
+        boxShadow: true,
+        maxHeight: 100,
+    },
+    filter: {
+        blocked: {
+            urls: {
+                partial: [],
+                exact: []
+            }
+        },
+        restricted: {
+            urls: {
+                partial: [],
+                exact: ["\/analisis\/el-aborregamiento-social-espanol-intransitorio"]
+            }
+        }
+    },
+    elasticNative: {
+        insertDivId: "elastic-native-wrapper",
+        insertDivElement: null,
+        gamDivId: "r89-elastic-native",
+        gamMeasureDivId: "r89-elastic-native-measure",
+        gamMeasureSlot: null,
+        gamMeasureCalled: false,
+        viewTime: 30000, // The default timeout, will be overwritten by the native settings
+        measuredTime: 0,
+        intervalTime: 2500,
+        inView: false,
+        labelText: '▼ Gesponsord',
+        labelStyle: {
+            "color":"#999999",
+            "textAlign":"center",
+            "fontSize":"12px",
+            "lineHeight":"16px",
+            "margin":"0px 0px 15px 0px",
+            "padding":"4px 0 6px 5px",
+            "fontFamily":"Arial",
+            "borderBottom":"1px solid #ccc"
+        },
+    },
+    refresh: {
+        startTime: 30000,
+        time: 5000,
+        intervalTime: 2500,
+        updateTime: 2500,
+        // time: 10000,
+        // intervalTime: 2000,
+        // updateTime: 1000,
+        allowedHeights: [
+            50,
+            100,
+            240,
+            250,
+            280,
+            600,
+            90,
+            250
+        ],
+        adUnits: {},
+    },
+    skipGAM: {
+        adUnits: [],
+        floor: 0.03
+    }
+};
+
+r89.refreshSlotsOnLoad = [];
+r89.lazyLoadSlots = [];
+r89.adUnitsInserted = false;
+r89.adUnitsInsertedRequestedOnLoad = false;
+r89.adUnitsInsertedIntervalCount = 0;
+
+r89.currentUrl = {
+    href: window.location.href.replace(/\/$/, ''),
+    host: window.location.hostname.replace('www.', ''),
+    path: ((window.location.pathname == "/") ? "/" : window.location.pathname.replace(/\/$/, '') ),
+};
+
+r89.analytics = {
+    events: [],
+    loaded: false,
+    trackerName: null,
+};
+
+r89.analytics.getTrackerName = function() {
+    ga(function() {
+        var gaTrackers = ga.getAll();
+        if (gaTrackers.length > 0) {
+            r89.analytics.trackerName = gaTrackers[0].get('name');
+        }
+    });
+};
+
+r89.analytics.sendEvent = function(category, action) {
+
+    if (r89.analytics.loaded) {
+        ga(r89.analytics.trackerName + '.send', {
+            hitType: 'event',
+            eventCategory: category,
+            eventAction: action
+        });
+        r89.log("Analytics: " + category + "," + action);
+    }
+    else {
+        r89.analytics.events.push([category, action]);
+    }
+}
+
+
+// Targeting opties
+r89.keyValues = {
+    titleTags: [],
+    iabContentTaxonomy: [],
+    lotameContentTaxonomy: [],
+    screenWidth: '0-320'
+};
+
+// Adsense fallback slots
+r89.adsenseFallbacks = [];
+
+r89.loadNamespace = function() {
+    r89.body = window.top.document.body;
+    r89.screenWidth = document.documentElement.clientWidth;
+    r89.screenHeight = document.documentElement.clientHeight;
+    r89.device = (r89.body.scrollWidth < 980 || document.documentElement.clientWidth < 980) ? 'mobile' : 'desktop';
+    r89.timeouts.prebid = (r89.device == 'desktop') ? 1500 : 1500;
+};
+
+r89.loadKeyValues = function() {
+
+    var kv_title = document.title.toLowerCase().normalize('NFD').replace(/[^\w\s]/gi, '').replace(/ +(?= )/g,'');
+    var kv_tags = kv_title.split(" ");
+
+    for (var i = 0; i < kv_tags.length; i++) {
+
+        if (kv_tags[i].length > 2 && r89.keyValues.titleTags.indexOf(kv_tags[i]) == -1) {
+            r89.keyValues.titleTags.push(kv_tags[i]);
+        }
+    }
+
+    // Screen resolution key value
+    if (r89.screenWidth < 320) { r89.keyValues.screenWidth = '0-320'; }
+    else if (r89.screenWidth < 360) { r89.keyValues.screenWidth = '320-360'; }
+    else if (r89.screenWidth < 375) { r89.keyValues.screenWidth = '360-375'; }
+    else if (r89.screenWidth < 414) { r89.keyValues.screenWidth = '375-414'; }
+    else if (r89.screenWidth < 768) { r89.keyValues.screenWidth = '414-768'; }
+    else if (r89.screenWidth < 992) { r89.keyValues.screenWidth = '768-992'; }
+    else if (r89.screenWidth < 1024) { r89.keyValues.screenWidth = '992-1024'; }
+    else if (r89.screenWidth < 1152) { r89.keyValues.screenWidth = '1024-1152'; }
+    else if (r89.screenWidth < 1280) { r89.keyValues.screenWidth = '1152-1280'; }
+    else if (r89.screenWidth < 1440) { r89.keyValues.screenWidth = '1280-1440'; }
+    else if (r89.screenWidth < 1680) { r89.keyValues.screenWidth = '1440-1680'; }
+    else if (r89.screenWidth < 1920) { r89.keyValues.screenWidth = '1680-1920'; }
+    else { r89.keyValues.screenWidth = '1920-plus'; }
+};
+
+// Set scripts
+r89.log = function(str) {
+    console.log("R89 | " + str);
+};
+
+r89.performanceNow = function() {
+    if (r89.settings.performanceLogging) {
+
+        let now = performance.now();
+        let diff = now - r89.settings.performanceNow;
+        r89.settings.performanceNow = now;
+
+        r89.log('Timestamp: ' + performance.now() + ' | Since previous timer: ' + diff);
+    }
+}
+
+// Make a random number
+r89.randomId = function() {
+    return Math.round(new Date().getTime() / 1000);
+};
+
+r89.getElementTopOffset = function(elem) {
+    var location = 0;
+    if (elem.offsetParent) {
+        do {
+            location += elem.offsetTop;
+            elem = elem.offsetParent;
+        } while (elem);
+    }
+    return location >= 0 ? location : 0;
+};
+
+// Set events
+r89.eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
+r89.messageEvent = r89.eventMethod === 'attachEvent' ? 'onmessage' : 'message';
+r89.measure = function(segment, action) {
+
+    r89.log("Measure: " + segment + "," + action);
+
+    if (window.top.document.body !== null) {
+
+        var measure_pixel = document.createElement("img");
+        measure_pixel.src = 'https://measure.refinery89.com/' + segment + '/162/' + action;
+        measure_pixel.style.position = "absolute";
+        measure_pixel.style.visibility = "hidden";
+        measure_pixel.style.width = "1px";
+        measure_pixel.style.height = "1px";
+        measure_pixel.style.maxWidth = "1px";
+        measure_pixel.style.bottom = "0";
+        measure_pixel.style.left = "0";
+        measure_pixel.width = "1";
+        measure_pixel.height = "1";
+        
+        window.top.document.body.appendChild(measure_pixel);
+    }
+    else {
+        fetch('https://measure.refinery89.com/' + segment + '/162/' + action, {
+            method: 'GET',
+            mode: 'no-cors'
+        });
+    }
+}
+
+r89.measure('website', 'tag_load');
+var preloadLink = null;
+
+
+preloadLink = document.createElement("link");
+preloadLink.href = "https://tags.refinery89.com/prebid/prebid6.10.0-v2.js";
+preloadLink.rel = "preload";
+preloadLink.as = "script";
+r89.head.appendChild(preloadLink);
+
+
+preloadLink = document.createElement("link");
+preloadLink.href = "https://tags.refinery89.com/prebid/creative.js";
+preloadLink.rel = "preload";
+preloadLink.as = "script";
+r89.head.appendChild(preloadLink);
+
+
+preloadLink = document.createElement("link");
+preloadLink.href = "https://ads.pubmatic.com/AdServer/js/pwt/158018/3651/pwt.js";
+preloadLink.rel = "preload";
+preloadLink.as = "script";
+r89.head.appendChild(preloadLink);
+
+
+preloadLink = document.createElement("link");
+preloadLink.href = "https://c.amazon-adsystem.com/aax2/apstag.js";
+preloadLink.rel = "preload";
+preloadLink.as = "script";
+r89.head.appendChild(preloadLink);
+
+r89.prebid.bids['Desktop-300x600-ATF'] = [{"bidder":"appnexus","params":{"placementId":18474109}},{"bidder":"rubicon","params":{"accountId":14940,"position":"atf","siteId":310062,"zoneId":2119880}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358746}},{"bidder":"weborama","params":{"placementId":22559708}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73025,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535985}},{"bidder":"pubmatic","params":{"adSlot":"3948715","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933552}},{"bidder":"adform","params":{"mid":1085150,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-300x600-ATF","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop_300x600_ATF"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-300x600-ATF"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787775252672","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":870304787}}];
+    r89.prebid.bidderCounts['Desktop-300x600-ATF'] = 0;
+    r89.prebid.bids['Desktop-728x90-ATF'] = [{"bidder":"appnexus","params":{"placementId":22030831}},{"bidder":"rubicon","params":{"accountId":14940,"position":"atf","siteId":310062,"zoneId":2119884}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358750}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73942,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535987}},{"bidder":"pubmatic","params":{"adSlot":"3948717","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933554}},{"bidder":"adform","params":{"mid":1085152,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-728x90-ATF","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop_728x90"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-728x90-ATF"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":742492564}}];
+    r89.prebid.bidderCounts['Desktop-728x90-ATF'] = 0;
+    r89.prebid.bids['Desktop-970x250-ATF'] = [{"bidder":"appnexus","params":{"placementId":22030833}},{"bidder":"rubicon","params":{"accountId":14940,"position":"atf","siteId":310062,"zoneId":2119888}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358752}},{"bidder":"weborama","params":{"placementId":22559710}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73940,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535989}},{"bidder":"pubmatic","params":{"adSlot":"3454641","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933556}},{"bidder":"adform","params":{"mid":1085154,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-970x250-ATF","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop_970x250"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-970x250-ATF"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787775252672","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":330171723}}];
+    r89.prebid.bidderCounts['Desktop-970x250-ATF'] = 0;
+    r89.prebid.bids['Desktop-Takeover'] = [{"bidder":"appnexus","params":{"placementId":22030836}},{"bidder":"rubicon","params":{"accountId":14940,"position":"atf","siteId":310062,"zoneId":2119894}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358754}},{"bidder":"justpremium","params":{"allow":["wp","wv"],"zone":110859}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73024,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535993}},{"bidder":"pubmatic","params":{"adSlot":"3948723","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933559}},{"bidder":"adform","params":{"mid":1085163,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-Takeover","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop_Takeover"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-Takeover"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":428868556}}];
+    r89.prebid.bidderCounts['Desktop-Takeover'] = 0;
+    r89.prebid.bids['Desktop-300x600-BTF'] = [{"bidder":"appnexus","params":{"placementId":22030830}},{"bidder":"rubicon","params":{"accountId":14940,"position":"btf","siteId":310062,"zoneId":2119882}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358747}},{"bidder":"weborama","params":{"placementId":22559709}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73026,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535986}},{"bidder":"pubmatic","params":{"adSlot":"3948716","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933553}},{"bidder":"adform","params":{"mid":1085151,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-300x600-BTF","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop_300x600_BTF"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-300x600-BTF"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787775252672","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":145883063}}];
+    r89.prebid.bidderCounts['Desktop-300x600-BTF'] = 0;
+    r89.prebid.bids['Desktop-728x90-BTF'] = [{"bidder":"appnexus","params":{"placementId":22030832}},{"bidder":"rubicon","params":{"accountId":14940,"position":"btf","siteId":310062,"zoneId":2119886}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358751}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73941,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535988}},{"bidder":"pubmatic","params":{"adSlot":"3948718","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933555}},{"bidder":"adform","params":{"mid":1085153,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-728x90-BTF","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop-728x90-BTF"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-728x90-BTF"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":141858943}}];
+    r89.prebid.bidderCounts['Desktop-728x90-BTF'] = 0;
+    r89.prebid.bids['Desktop-970x250-BTF'] = [{"bidder":"appnexus","params":{"placementId":22030834}},{"bidder":"rubicon","params":{"accountId":14940,"position":"btf","siteId":310062,"zoneId":2119890}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358753}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73027,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535990}},{"bidder":"pubmatic","params":{"adSlot":"3948720","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933557}},{"bidder":"adform","params":{"mid":1085155,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-970x250-BTF","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop-970x250-BTF"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-970x250-BTF"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":685251766}}];
+    r89.prebid.bidderCounts['Desktop-970x250-BTF'] = 0;
+    r89.prebid.bids['Desktop-Pushup-970x250'] = [{"bidder":"appnexus","params":{"placementId":22030835}},{"bidder":"rubicon","params":{"accountId":14940,"position":"atf","siteId":310062,"zoneId":2119892}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358750}},{"bidder":"justpremium","params":{"allow":["as","fa"],"zone":110859}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73940,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535991}},{"bidder":"pubmatic","params":{"adSlot":"3948722","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933558}},{"bidder":"adform","params":{"mid":1085164,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"desktop","organizationId":1117,"placement":"inbestia.com-Desktop-Pushup-970x250","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop_Pushup_970x250"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Desktop-Pushup-970x250"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}}];
+    r89.prebid.bidderCounts['Desktop-Pushup-970x250'] = 0;
+    r89.prebid.bids['Mobile-300x250-Low'] = [{"bidder":"appnexus","params":{"placementId":18474240}},{"bidder":"rubicon","params":{"accountId":14940,"position":"btf","siteId":310062,"zoneId":2119896}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358744}},{"bidder":"weborama","params":{"placementId":22559711}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73031,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535994}},{"bidder":"pubmatic","params":{"adSlot":"3948724","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933560}},{"bidder":"adform","params":{"mid":1085160,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"mobile","organizationId":1117,"placement":"inbestia.com-Mobile-300x250-Low","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Mobile-300x250-Low"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Mobile-300x250-Low"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":306926883}}];
+    r89.prebid.bidderCounts['Mobile-300x250-Low'] = 0;
+    r89.prebid.bids['Mobile-300x250-Mid'] = [{"bidder":"appnexus","params":{"placementId":18474241}},{"bidder":"rubicon","params":{"accountId":14940,"position":"btf","siteId":310062,"zoneId":2119898}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358745}},{"bidder":"justpremium","params":{"allow":["is"],"zone":110859}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73029,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535995}},{"bidder":"pubmatic","params":{"adSlot":"3948725","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933561}},{"bidder":"adform","params":{"mid":1085159,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"mobile","organizationId":1117,"placement":"inbestia.com-Mobile-300x250-Mid","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Mobile-300x250-Mid"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Mobile-300x250-Mid"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":800810053}}];
+    r89.prebid.bidderCounts['Mobile-300x250-Mid'] = 0;
+    r89.prebid.bids['Mobile-320x100-Top'] = [{"bidder":"appnexus","params":{"placementId":18474229}},{"bidder":"rubicon","params":{"accountId":14940,"position":"atf","siteId":310062,"zoneId":2119900}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358748}},{"bidder":"weborama","params":{"placementId":22559712}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73028,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535996}},{"bidder":"pubmatic","params":{"adSlot":"3948728","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933562}},{"bidder":"adform","params":{"mid":1085161,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"mobile","organizationId":1117,"placement":"inbestia.com-Mobile-320x100-Top","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Mobile-320x100-Top"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Mobile-320x100-Top"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":582423223}}];
+    r89.prebid.bidderCounts['Mobile-320x100-Top'] = 0;
+    r89.prebid.bids['Mobile-Sticky-320x100'] = [{"bidder":"appnexus","params":{"placementId":18474233}},{"bidder":"rubicon","params":{"accountId":14940,"position":"atf","siteId":310062,"zoneId":2119902}},{"bidder":"criteo","params":{"networkId":8579,"publisherSubId":"inbestia.com","zoneId":1358749}},{"bidder":"weborama","params":{"placementId":22559713}},{"bidder":"justpremium","params":{"allow":["ms"],"zone":110859}},{"bidder":"smartadserver","params":{"domain":"https:\/\/prg.smartadserver.com","formatId":73028,"pageId":1191850,"siteId":340663}},{"bidder":"improvedigital","params":{"placementId":22535997}},{"bidder":"pubmatic","params":{"adSlot":"3948731","publisherId":"158018"}},{"bidder":"sovrn","params":{"tagid":933563}},{"bidder":"adform","params":{"mid":1085168,"priceType":"net"}},{"bidder":"adagio","params":{"environment":"mobile","organizationId":1117,"placement":"inbestia.com-Mobile-Sticky-320x100","site":"inbestia-com","useAdUnitCodeAsAdUnitElementId":true}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Mobile_Sticky_300x250"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Mobile-Sticky-320x100"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":287916547}}];
+    r89.prebid.bidderCounts['Mobile-Sticky-320x100'] = 0;
+    r89.prebid.bids['Native'] = [{"bidder":"appnexus","params":{"placementId":22030837}},{"bidder":"rubicon","params":{"accountId":14940,"position":"btf","siteId":310062,"zoneId":2119904}},{"bidder":"triplelift","params":{"inventoryCode":"Refinery89_RON_Desktop_Native"}},{"bidder":"outbrain","params":{"publisher":{"id":"000e1603e3e8ae430228ecc6109d5017d7","name":"Refinery89","domain":"refinery89.com"},"tagid":"inbestia.com-Native"}},{"bidder":"operaads","params":{"endpointId":"ep5787769259968","placementId":"s5787776937600","publisherId":"pub5787767112000"}},{"bidder":"medianet","params":{"cid":"8CU3GWXE7","crid":775376284}}];
+    r89.prebid.bidderCounts['Native'] = 0;
+    r89.prebid.bids['Video-Outstream'] = [];
+    r89.prebid.bidderCounts['Video-Outstream'] = 0;
+!function(e){var n=!1;if("function"==typeof define&&define.amd&&(define(e),n=!0),"object"==typeof exports&&(module.exports=e(),n=!0),!n){var o=window.Cookies,t=window.Cookies=e();t.noConflict=function(){return window.Cookies=o,t}}}(function(){function g(){for(var e=0,n={};e<arguments.length;e++){var o=arguments[e];for(var t in o)n[t]=o[t]}return n}return function e(l){function C(e,n,o){var t;if("undefined"!=typeof document){if(1<arguments.length){if("number"==typeof(o=g({path:"/"},C.defaults,o)).expires){var r=new Date;r.setMilliseconds(r.getMilliseconds()+864e5*o.expires),o.expires=r}o.expires=o.expires?o.expires.toUTCString():"";try{t=JSON.stringify(n),/^[\{\[]/.test(t)&&(n=t)}catch(e){}n=l.write?l.write(n,e):encodeURIComponent(String(n)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),e=(e=(e=encodeURIComponent(String(e))).replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent)).replace(/[\(\)]/g,escape);var i="";for(var c in o)o[c]&&(i+="; "+c,!0!==o[c]&&(i+="="+o[c]));return document.cookie=e+"="+n+i}e||(t={});for(var a=document.cookie?document.cookie.split("; "):[],s=/(%[0-9A-Z]{2})+/g,f=0;f<a.length;f++){var p=a[f].split("="),d=p.slice(1).join("=");this.json||'"'!==d.charAt(0)||(d=d.slice(1,-1));try{var u=p[0].replace(s,decodeURIComponent);if(d=l.read?l.read(d,u):l(d,u)||d.replace(s,decodeURIComponent),this.json)try{d=JSON.parse(d)}catch(e){}if(e===u){t=d;break}e||(t[u]=d)}catch(e){}}return t}}return(C.set=C).get=function(e){return C.call(C,e)},C.getJSON=function(){return C.apply({json:!0},[].slice.call(arguments))},C.defaults={},C.remove=function(e,n){C(e,"",g(n,{expires:-1}))},C.withConverter=e,C}(function(){})});
+
+r89.cookies = Cookies.noConflict();
+!function(f,_){"use strict";if("IntersectionObserver"in f&&"IntersectionObserverEntry"in f&&"intersectionRatio"in f.IntersectionObserverEntry.prototype)"isIntersecting"in f.IntersectionObserverEntry.prototype||Object.defineProperty(f.IntersectionObserverEntry.prototype,"isIntersecting",{get:function(){return 0<this.intersectionRatio}});else{var e=[];t.prototype.THROTTLE_TIMEOUT=100,t.prototype.POLL_INTERVAL=null,t.prototype.USE_MUTATION_OBSERVER=!0,t.prototype.observe=function(e){if(!this._observationTargets.some(function(t){return t.element==e})){if(!e||1!=e.nodeType)throw new Error("target must be an Element");this._registerInstance(),this._observationTargets.push({element:e,entry:null}),this._monitorIntersections(),this._checkForIntersections()}},t.prototype.unobserve=function(e){this._observationTargets=this._observationTargets.filter(function(t){return t.element!=e}),this._observationTargets.length||(this._unmonitorIntersections(),this._unregisterInstance())},t.prototype.disconnect=function(){this._observationTargets=[],this._unmonitorIntersections(),this._unregisterInstance()},t.prototype.takeRecords=function(){var t=this._queuedEntries.slice();return this._queuedEntries=[],t},t.prototype._initThresholds=function(t){var e=t||[0];return Array.isArray(e)||(e=[e]),e.sort().filter(function(t,e,n){if("number"!=typeof t||isNaN(t)||t<0||1<t)throw new Error("threshold must be a number between 0 and 1 inclusively");return t!==n[e-1]})},t.prototype._parseRootMargin=function(t){var e=(t||"0px").split(/\s+/).map(function(t){var e=/^(-?\d*\.?\d+)(px|%)$/.exec(t);if(!e)throw new Error("rootMargin must be specified in pixels or percent");return{value:parseFloat(e[1]),unit:e[2]}});return e[1]=e[1]||e[0],e[2]=e[2]||e[0],e[3]=e[3]||e[1],e},t.prototype._monitorIntersections=function(){this._monitoringIntersections||(this._monitoringIntersections=!0,this.POLL_INTERVAL?this._monitoringInterval=setInterval(this._checkForIntersections,this.POLL_INTERVAL):(n(f,"resize",this._checkForIntersections,!0),n(_,"scroll",this._checkForIntersections,!0),this.USE_MUTATION_OBSERVER&&"MutationObserver"in f&&(this._domObserver=new MutationObserver(this._checkForIntersections),this._domObserver.observe(_,{attributes:!0,childList:!0,characterData:!0,subtree:!0}))))},t.prototype._unmonitorIntersections=function(){this._monitoringIntersections&&(this._monitoringIntersections=!1,clearInterval(this._monitoringInterval),this._monitoringInterval=null,o(f,"resize",this._checkForIntersections,!0),o(_,"scroll",this._checkForIntersections,!0),this._domObserver&&(this._domObserver.disconnect(),this._domObserver=null))},t.prototype._checkForIntersections=function(){var h=this._rootIsInDom(),c=h?this._getRootRect():{top:0,bottom:0,left:0,right:0,width:0,height:0};this._observationTargets.forEach(function(t){var e=t.element,n=m(e),o=this._rootContainsTarget(e),i=t.entry,r=h&&o&&this._computeTargetAndRootIntersection(e,c),s=t.entry=new a({time:f.performance&&performance.now&&performance.now(),target:e,boundingClientRect:n,rootBounds:c,intersectionRect:r});i?h&&o?this._hasCrossedThreshold(i,s)&&this._queuedEntries.push(s):i&&i.isIntersecting&&this._queuedEntries.push(s):this._queuedEntries.push(s)},this),this._queuedEntries.length&&this._callback(this.takeRecords(),this)},t.prototype._computeTargetAndRootIntersection=function(t,e){if("none"!=f.getComputedStyle(t).display){for(var n,o,i,r,s,h,c,a,u=m(t),l=v(t),p=!1;!p;){var d=null,g=1==l.nodeType?f.getComputedStyle(l):{};if("none"==g.display)return;if(l==this.root||l==_?(p=!0,d=e):l!=_.body&&l!=_.documentElement&&"visible"!=g.overflow&&(d=m(l)),d&&(n=d,o=u,void 0,i=Math.max(n.top,o.top),r=Math.min(n.bottom,o.bottom),s=Math.max(n.left,o.left),h=Math.min(n.right,o.right),a=r-i,!(u=0<=(c=h-s)&&0<=a&&{top:i,bottom:r,left:s,right:h,width:c,height:a})))break;l=v(l)}return u}},t.prototype._getRootRect=function(){var t;if(this.root)t=m(this.root);else{var e=_.documentElement,n=_.body;t={top:0,left:0,right:e.clientWidth||n.clientWidth,width:e.clientWidth||n.clientWidth,bottom:e.clientHeight||n.clientHeight,height:e.clientHeight||n.clientHeight}}return this._expandRectByRootMargin(t)},t.prototype._expandRectByRootMargin=function(n){var t=this._rootMarginValues.map(function(t,e){return"px"==t.unit?t.value:t.value*(e%2?n.width:n.height)/100}),e={top:n.top-t[0],right:n.right+t[1],bottom:n.bottom+t[2],left:n.left-t[3]};return e.width=e.right-e.left,e.height=e.bottom-e.top,e},t.prototype._hasCrossedThreshold=function(t,e){var n=t&&t.isIntersecting?t.intersectionRatio||0:-1,o=e.isIntersecting?e.intersectionRatio||0:-1;if(n!==o)for(var i=0;i<this.thresholds.length;i++){var r=this.thresholds[i];if(r==n||r==o||r<n!=r<o)return!0}},t.prototype._rootIsInDom=function(){return!this.root||i(_,this.root)},t.prototype._rootContainsTarget=function(t){return i(this.root||_,t)},t.prototype._registerInstance=function(){e.indexOf(this)<0&&e.push(this)},t.prototype._unregisterInstance=function(){var t=e.indexOf(this);-1!=t&&e.splice(t,1)},f.IntersectionObserver=t,f.IntersectionObserverEntry=a}function a(t){this.time=t.time,this.target=t.target,this.rootBounds=t.rootBounds,this.boundingClientRect=t.boundingClientRect,this.intersectionRect=t.intersectionRect||{top:0,bottom:0,left:0,right:0,width:0,height:0},this.isIntersecting=!!t.intersectionRect;var e=this.boundingClientRect,n=e.width*e.height,o=this.intersectionRect,i=o.width*o.height;this.intersectionRatio=n?Number((i/n).toFixed(4)):this.isIntersecting?1:0}function t(t,e){var n,o,i,r=e||{};if("function"!=typeof t)throw new Error("callback must be a function");if(r.root&&1!=r.root.nodeType)throw new Error("root must be an Element");this._checkForIntersections=(n=this._checkForIntersections.bind(this),o=this.THROTTLE_TIMEOUT,i=null,function(){i||(i=setTimeout(function(){n(),i=null},o))}),this._callback=t,this._observationTargets=[],this._queuedEntries=[],this._rootMarginValues=this._parseRootMargin(r.rootMargin),this.thresholds=this._initThresholds(r.threshold),this.root=r.root||null,this.rootMargin=this._rootMarginValues.map(function(t){return t.value+t.unit}).join(" ")}function n(t,e,n,o){"function"==typeof t.addEventListener?t.addEventListener(e,n,o||!1):"function"==typeof t.attachEvent&&t.attachEvent("on"+e,n)}function o(t,e,n,o){"function"==typeof t.removeEventListener?t.removeEventListener(e,n,o||!1):"function"==typeof t.detatchEvent&&t.detatchEvent("on"+e,n)}function m(t){var e;try{e=t.getBoundingClientRect()}catch(t){}return e?(e.width&&e.height||(e={top:e.top,right:e.right,bottom:e.bottom,left:e.left,width:e.right-e.left,height:e.bottom-e.top}),e):{top:0,bottom:0,left:0,right:0,width:0,height:0}}function i(t,e){for(var n=e;n;){if(n==t)return!0;n=v(n)}return!1}function v(t){var e=t.parentNode;return e&&11==e.nodeType&&e.host?e.host:e&&e.assignedSlot?e.assignedSlot.parentNode:e}}(window,document);
+r89.stickyFooter = {};
+
+r89.stickyFooter.closeButton = function(slotDivParent, slotId) {
+
+    var closeStickyFooterButton = document.createElement('span');
+
+    const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const iconPath = document.createElementNS(
+    'http://www.w3.org/2000/svg',
+    'path'
+    );
+
+    iconSvg.setAttribute('fill', 'none');
+    iconSvg.setAttribute('viewBox', '0 0 18 18');
+    iconSvg.setAttribute('stroke', '#bbb');
+    iconSvg.style.margin = "3px 0 0 4px";
+
+    iconPath.setAttribute(
+    'd',
+    'M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'
+    );
+    iconPath.setAttribute('stroke-linecap', 'round');
+    iconPath.setAttribute('stroke-linejoin', 'round');
+    iconPath.setAttribute('stroke-width', '2');
+
+    iconSvg.appendChild(iconPath);
+
+    closeStickyFooterButton.appendChild(iconSvg);
+
+    closeStickyFooterButton.style.cssText = [
+        'position: absolute;',
+        'top: -30px;',
+        'right: 0;',
+        'z-index: 9999;',
+        'background: ' + slotDivParent.style.backgroundColor + ';',
+        'border-top-left-radius: 10px;',
+        'border-top: 1px solid #ccc;',
+        'border-left: 1px solid #ccc;',
+        'width: 34px;',
+        'height: 30px;',
+        'color: #ccc;',
+        'cursor: pointer;',
+        'line-height: 30px;',
+        'font-size: 20px;',
+        'font-family: helvetica;',
+        'text-align: center;',
+        'display: none;',
+        'box-sizing: content-box;'
+    ].join('\n');
+
+    closeStickyFooterButton.className = r89.settings.stickyFooter.closeButtonClass;
+
+    slotDivParent.appendChild(closeStickyFooterButton);
+
+    setTimeout(function() {
+        closeStickyFooterButton.style.display = "block";
+    }, r89.settings.stickyFooter.closeButtonAfter);
+
+    closeStickyFooterButton.addEventListener("click", function() {
+        slotDivParent.style.display = "none";
+
+        if (typeof slotId !== 'undefined' && slotId in r89.settings.refresh.adUnits) {
+            r89.settings.refresh.adUnits[slotId].useRefresh = false;
+        }
+    });
+
+    return closeStickyFooterButton;
+}
+
+r89.stickyFooter.placeCookies = function() {
+
+    // Capping cookie plaatsen voor sticky footer posities met cap
+    if (r89.device == 'desktop' && r89.settings.stickyFooter.desktopCap > 0) {
+        r89.cookies.set(r89.settings.stickyFooter.cookieName, '1', { expires: new Date(new Date().getTime() + r89.settings.stickyFooter.desktopCap * 60 * 1000), secure: true });
+    }
+    else if (r89.device == 'mobile' && r89.settings.stickyFooter.mobileCap > 0) {
+        r89.cookies.set(r89.settings.stickyFooter.cookieName, '1', { expires: new Date(new Date().getTime() + r89.settings.stickyFooter.mobileCap * 60 * 1000), secure: true });
+    }
+}
+r89.tagsLoad = function() {
+
+    // Controleren of de tags al ingeladen zijn om dubbele plaatsing te voorkomen
+    if (r89.loaded) {
+        r89.log("Tags: already loaded before.");
+        return;
+    }
+
+    r89.log("Tags: Loading.");
+
+	r89.loaded = true;
+
+    // Load Prebid script
+    r89.pbjsInsert();
+
+    // Tracking pixels inladen
+    r89.loadTrackingPixels();
+
+    if (r89.processAds === false) {
+        r89.log("Tags: Loading stopped.");
+        return;
+    }
+
+    if (r89.cmp.cookieConsent === false) {
+        r89.log("Tags: Loading stopped due to no cookie consent.");
+        return;
+    }
+
+        // Refresh ad slots
+    window.setTimeout(function() {
+
+    r89.log("Start refresh timer count.");
+
+    window.setInterval(function() {
+
+        // r89.log("Run refresh check");
+
+        for (var id in r89.settings.refresh.adUnits) {
+
+            var adUnit = r89.settings.refresh.adUnits[id]
+
+            // r89.log(adUnit.id + " in view for " + adUnit.timeInview);
+
+            if (adUnit.inview === true && adUnit.useRefresh === true && adUnit.timeInview > r89.settings.refresh.time) {
+
+                googletag.cmd.push(function() {
+
+                    r89.log("Refresh " + adUnit.id);
+                    // console.log(adUnit);
+
+                    // Set wrapper height
+                    var refreshAdUnitComputed = window.getComputedStyle(adUnit.adUnitWrapper);
+                    adUnit.adUnitWrapper.style.height = refreshAdUnitComputed.getPropertyValue('height');
+
+                    // Remove timer
+                    if (adUnit.timer !== null) {
+                        window.clearInterval(adUnit.timer);
+                        adUnit.timer = null;
+                    }
+
+                    googletag.destroySlots([adUnit.adslot]);
+
+                    delete r89.settings.refresh.adUnits[id];
+
+                    // DFP ad slot bepalen
+                    var slot = googletag.defineSlot("/" + r89.settings.gamTagNetworkId + "/" + adUnit.gamAdUnit, adUnit.size, adUnit.id);
+                    slot.setTargeting('ad_slot', adUnit.adSlotName);
+                    slot.setTargeting('rfr', 1);
+                    // slot.setTargeting('has_rfr', 1); // Enable this after multiple refreshes are available
+                    slot.addService(googletag.pubads() );
+                    googletag.display(id);
+
+                    // Refresh ad unit
+                    googletag.pubads().refresh([slot]);
+
+                    /*
+
+                    // Prevent collapse
+                    adUnit.adslot.setCollapseEmptyDiv(false);
+
+                    // Remove Prebid targeting
+                    adUnit.adslot.clearTargeting('hb_bidder');
+                    adUnit.adslot.clearTargeting('hb_pb');
+                    adUnit.adslot.clearTargeting('amznbid');
+
+                    // Add refresh key value for reporting
+                    adUnit.adslot.setTargeting('rfr', 1);
+
+                    // Reset time in view
+                    adUnit.timeInview = 0;
+
+                    */
+                });
+            }
+        }
+
+    }, r89.settings.refresh.intervalTime);
+
+    }, r89.settings.refresh.startTime);
+    
+    if (r89.settings.prioritizeCustomAdUnits) {
+        // Custom units toevoegen
+        r89.insertCustomAdUnits();
+
+        // Ad units toevoegen
+        r89.insertOnLoadAdUnits();
+    }
+    else {
+        // Custom units toevoegen
+        r89.insertCustomAdUnits();
+    }
+
+    function adUnitsInsertCheck() {
+
+        r89.log("Ad Units insert check.");
+
+        if (r89.adUnitsInserted && !r89.adUnitsInsertedRequestedOnLoad) {
+            googletag.cmd.push(function() {
+                r89.requestAds(r89.insertAdUnits.call_prebid, r89.insertAdUnits.call_amazon, r89.insertAdUnits.ad_unit_codes, r89.insertAdUnits.ad_units, r89.insertAdUnits.amazon_slots, r89.refreshSlotsOnLoad);
+            });
+
+            r89.adUnitsInsertedRequestedOnLoad = true;
+
+            clearInterval(adUnitsInsertInterval);
+        }
+
+        ++r89.adUnitsInsertedIntervalCount;
+
+        if (r89.adUnitsInsertedIntervalCount > 15) {
+            clearInterval(adUnitsInsertInterval);
+        }
+    }
+
+    // Request the ads
+    if (r89.adUnitsInserted) {
+
+        r89.log("Ad Units: Insert on load units on first try.");
+
+                    googletag.cmd.push(function() {
+                r89.requestAds(r89.insertAdUnits.call_prebid, r89.insertAdUnits.call_amazon, r89.insertAdUnits.ad_unit_codes, r89.insertAdUnits.ad_units, r89.insertAdUnits.amazon_slots, r89.refreshSlotsOnLoad);
+            });
+            }
+    else {
+        // Ad units insert not done yet, so wait until it is
+        var adUnitsInsertInterval = setInterval(adUnitsInsertCheck, 250);
+    }
+
+    // Outstream toevoegen
+    if (typeof r89.insertOutstream === 'function') {
+        r89.insertOutstream();
+    }
+    else {
+        r89.log("Video: No outstream function found.");
+    }
+
+    // Overlay toevoegen
+    if (typeof r89.insertVideoOverlay === 'function') {
+        r89.insertVideoOverlay();
+    }
+
+    // In-image toevoegen
+    if (typeof r89.insertInImage === 'function') {
+        r89.insertInImage();
+    }
+
+    // Infinite scroll toevoegen
+    if (typeof r89.registerInfiniteScroll === 'function') {
+        r89.registerInfiniteScroll();
+    }
+
+    // Insert elastic native scripts
+    if (typeof r89.insertElasticNative === 'function') {
+        r89.insertElasticNative();
+    }
+
+    // Lotame check
+    if (typeof r89.insertLotame === 'function') {
+        r89.insertLotame();
+    }
+
+    // Insert fallback scripts
+    if (typeof r89.insertFallbacks === 'function') {
+        r89.insertFallbacks();
+    }
+};
+
+r89.loadTrackingPixels = function() {
+
+    r89.log("Tags: Load tracking pixels");
+
+    r89.tracking.forEach(function(pixel) {
+
+        r89.log("Tags: Load pixel " + pixel);
+
+        var p = document.createElement("img");
+            p.setAttribute("src", pixel);
+            p.setAttribute("height", "1");
+            p.setAttribute("width", "1");
+            p.style.position = "absolute";
+            p.style.bottom = "0px";
+            p.style.opacity = "0";
+            r89.body.appendChild(p);
+    });
+};
+
+var PWT = {};
+PWT.jsLoaded = function() {
+    r89.log("PWT | jsLoaded.");
+    r89.tagsLoad();
+};
+
+r89.loadPWT = function() {
+    r89.log("PWT | Load function.");
+
+    var purl = window.location.href;
+    var url = '//ads.pubmatic.com/AdServer/js/pwt/158018/3651';
+    var profileVersionId = '';
+    if(purl.indexOf('pwtv=')>0){
+        var regexp = /pwtv=(.*?)(&|$)/g;
+        var matches = regexp.exec(purl);
+        if(matches.length >= 2 && matches[1].length > 0){
+            profileVersionId = '/'+matches[1];
+        }
+    }
+    var wtads = document.createElement('script');
+    wtads.async = true;
+    wtads.type = 'text/javascript';
+    wtads.src = url+profileVersionId+'/pwt.js';
+    var node = document.getElementsByTagName('script')[0];
+    node.parentNode.insertBefore(wtads, node);
+
+    setTimeout(r89.tagsLoad, 500);
+};
+
+r89.readyStateTagsLoad = function() {
+
+    r89.log("DOM Content: Checking");
+    console.log(document.readyState);
+
+    if (document.readyState === "loading") {
+        r89.log("DOM Content: addEventListener");
+        document.addEventListener("DOMContentLoaded", r89.loadPWT);
+        // document.addEventListener("DOMContentLoaded", r89.tagsLoad);
+    } else {
+        r89.log("DOM Content: Ready");
+        r89.loadPWT();
+        // r89.tagsLoad();
+    }
+};
+function insertDesktopSkin(backgroundImage, backgroundColor, backgroundAttachment) {
+
+    if (typeof(backgroundColor) === 'undefined') {
+        backgroundColor = '#000000';
+    }
+
+    if (typeof(backgroundAttachment) === 'undefined') {
+        backgroundAttachment = 'scroll';
+    }
+
+    r89.addSkin(backgroundImage, backgroundColor, backgroundAttachment);
+}
+
+function insertDesktopSideLinks(link) {
+    r89.addSkinLinks(link);
+}
+
+r89.addSkin = function(backgroundImage, backgroundColor, backgroundAttachment) {
+
+    
+    if (typeof(backgroundColor) === 'undefined') {
+        backgroundColor = '#000000';
+    }
+
+    if (typeof(backgroundAttachment) === 'undefined') {
+        backgroundAttachment = 'scroll';
+    }
+
+    r89.body.style.backgroundColor = backgroundColor;
+    r89.body.style.backgroundImage = 'url(' + backgroundImage + ')';
+    r89.body.style.backgroundPosition = "center " + 183 + "px";
+    r89.body.style.backgroundRepeat = "no-repeat";
+	r89.body.style.backgroundSize = "auto";
+    r89.body.style.setProperty("background-attachment", backgroundAttachment, "important");
+};
+
+r89.addSkinLinks = function(link) {
+
+    
+    var link_l = document.createElement('a');
+    link_l.href = link;
+    link_l.target = "_blank";
+    link_l.style.width = "720px";
+    link_l.style.position = "fixed";
+    link_l.style.top = "183px";
+    link_l.style.bottom = 0;
+    link_l.style.right = "50%";
+    link_l.style.marginRight = "499.5px";
+    link_l.style.pointer = "cursor";
+    link_l.style.zIndex = "9";
+    r89.body.appendChild(link_l);
+
+    var link_r = document.createElement('a');
+    link_r.href = link;
+    link_r.target = "_blank";
+    link_r.style.width = "720px";
+    link_r.style.position = "fixed";
+    link_r.style.top = "183px";
+    link_r.style.bottom = 0;
+    link_r.style.left= "50%";
+    link_r.style.marginLeft = "499.5px";
+    link_r.style.pointer = "cursor";
+    link_r.style.zIndex = "9";
+    r89.body.appendChild(link_r);
+};
+r89.placeAdUnit = function(selector, position, id, ad_slot, gam_ad_unit, prebid_bidders, amazon, sizes, sizes_prebid, style, wrapper, wrapper_style, label, lazy_load, refresh, is_fallback, skip_gam) {
+
+    r89.log("Ad Unit: Place - " + id);
+
+    // Controleren of de selector al een element is
+    if (selector instanceof Element || selector instanceof HTMLDocument) {
+        var reference_wrapper = selector;
+    }
+    else {
+        var reference_wrapper = null;
+        var selector_split = selector.split(",");
+
+        for (var i = 0; i < selector_split.length; i++) {
+            reference_wrapper = r89.selectorWindow.querySelector(selector_split[i]);
+            if (reference_wrapper !== null) {
+                break;
+            }
+        }
+    }
+
+    if (reference_wrapper === null) {
+        r89.log("Ad Unit: Wrapper not found");
+        return false;
+    }
+
+    // De ad unit div maken
+    var ad_unit = document.createElement('div');
+    ad_unit.id = id;
+
+    var ad_unit_reference = ad_unit;
+
+    // Label toevoegen
+    if (label) {
+
+        r89.log("Ad Unit: Add label");
+
+        var ad_unit_label = document.createElement('div');
+        ad_unit_label.className = 'r89-ad-label';
+        ad_unit_label.innerHTML = r89.settings.labelText;
+
+        if (r89.settings.labelStyle) {
+            Object.keys(r89.settings.labelStyle).forEach(key => {
+                ad_unit_label.style[key] = r89.settings.labelStyle[key];
+            });
+        }
+
+        ad_unit_label.style.display = 'none';
+
+        var ad_unit_label_wrapper = document.createElement('div');
+        ad_unit_label_wrapper.appendChild(ad_unit_label);
+
+        ad_unit_label_wrapper.appendChild(ad_unit);
+
+        ad_unit_reference = ad_unit_label_wrapper;
+    }
+
+    // Styling toevoegen
+    if (style) {
+        Object.keys(style).forEach(key => {
+
+            if (label) {
+                ad_unit_label_wrapper.style[key] = style[key];
+            }
+            else {
+                ad_unit.style[key] = style[key];
+            }
+        });
+    }
+
+    // Een wrapper toevoegen aan de ad unit div
+    if (wrapper) {
+        var ad_unit_wrapper = document.createElement('div');
+        ad_unit_wrapper.id = id + '-wrapper';
+
+        // Styling toevoegen
+        if (wrapper_style) {
+            Object.keys(wrapper_style).forEach(key => {
+                ad_unit_wrapper.style[key] = wrapper_style[key];
+            });
+        }
+
+        if (label) {
+            ad_unit_wrapper.appendChild(ad_unit_label_wrapper);
+        }
+        else {
+            ad_unit_wrapper.appendChild(ad_unit);
+        }
+
+        ad_unit_reference = ad_unit_wrapper;
+    }
+
+    // De ad unit div op de pagina plaatsen
+    if (position == 'insertBefore') {
+        reference_wrapper.parentNode.insertBefore(ad_unit_reference, reference_wrapper);
+    }
+    else if (position == 'insertAfter') {
+        if (reference_wrapper.nextElementSibling === null) {
+            reference_wrapper.parentNode.appendChild(ad_unit_reference);
+        }
+        else {
+            reference_wrapper.parentNode.insertBefore(ad_unit_reference, reference_wrapper.nextElementSibling);
+        }
+    }
+    else if (position == 'appendChild') {
+        reference_wrapper.appendChild(ad_unit_reference);
+    }
+    else {
+        r89.log("Ad Unit: No valid position given");
+        return false;
+    }
+
+    // Skip GAM code for this ad unit
+    if (skip_gam) {
+        r89.settings.skipGAM.adUnits.push(id);
+        return true;
+    }
+
+    // GPT code toevoegen
+    googletag.cmd.push(function() {
+
+        r89.log("Ad Unit: Push GPT");
+
+        // DFP ad slot bepalen
+        var slot = googletag.defineSlot("/" + r89.settings.gamTagNetworkId + "/" + gam_ad_unit, sizes, id);
+        slot.setTargeting('ad_slot', ad_slot);
+
+        if (refresh) {
+            slot.setTargeting('has_rfr', 1);
+        }
+
+        slot.addService(googletag.pubads() );
+        googletag.display(id);
+
+        if (is_fallback) {
+            r89.fallbackAdSlot = slot;
+            return true;
+        }
+
+        if (!lazy_load || lazy_load == 0) {
+            r89.refreshSlotsOnLoad.push(slot);
+        }
+        else {
+            r89.registerLazyLoadSlot(ad_unit, slot, gam_ad_unit, prebid_bidders, amazon, sizes, sizes_prebid, lazy_load);
+        }
+
+        // Add ad unit to refresh list if needed
+        if (refresh) {
+            r89.settings.refresh.adUnits[id] = {
+                'id': id,
+                'adslot': slot,
+                'adUnitWrapper': ad_unit_wrapper,
+                'gamAdUnit': gam_ad_unit,
+                'adSlotName': ad_slot,
+                'viewable': false,
+                'timeInview': 0,
+                'inview': false,
+                'timer': null,
+                'useRefresh': true,
+                'size': null,
+            };
+        }
+
+    });
+
+    return true;
+};
+
+r89.registerLazyLoadSlot = function(ad_unit, slot, gam_ad_unit, prebid_bidders, amazon, sizes, sizes_prebid, lazy_load) {
+
+    r89.log("Ad Unit: " + ad_unit.id + " | Register lazy loading");
+
+    // De afstand waarop we de observer willen laten afgaan
+    var distance = Math.round(window.innerHeight * lazy_load) + 'px';
+
+    if (lazy_load > 9) {
+        distance = lazy_load * 1 + 'px';
+    }
+
+    r89.log("Ad Unit: " + ad_unit.id + " | Lazy load distance " + distance);
+
+    // De opties voor de observer
+    var observer_options = {
+        rootMargin: '0px 0px ' + distance + ' 0px',
+        threshold: 0
+    };
+
+    // De functie die bij het in view krijgen gebruikt wordt
+    var observer_callback = function(entries, observer) {
+
+        entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+                r89.log("Ad Unit: " + ad_unit.id + " | Slot in view");
+
+                // De slot laten herladen
+                googletag.cmd.push(function() {
+                    // r89.requestAds(call_prebid_ll, call_amazon_ll, ad_unit_codes_ll, ad_units_ll, amazon_slots_ll, [slot]);
+                    googletag.pubads().refresh([slot], {changeCorrelator: false});
+                });
+
+                // Geheugen vrijmaken
+                observer.unobserve(entry.target);
+            }
+        });
+    };
+
+    // De observer instellen
+    var observer = new IntersectionObserver(observer_callback, observer_options);
+
+    // Observe parent node, omdat de normale slot een display none krijft van GPT
+    observer.observe(ad_unit.parentNode);
+}
+
+r89.insertOnLoadAdUnits = function() {
+
+    r89.log("Tags: Insert On Load Ad Units");
+
+    // r89.requestAds(call_prebid, call_amazon, ad_unit_codes, ad_units, amazon_slots, r89.refreshSlotsOnLoad);
+
+    r89.insertAdUnits = {
+        'call_prebid': true,
+        'call_amazon': false,
+        'amazon_slots': [],
+        'ad_unit_codes': [],
+        'ad_units': []
+    };
+
+    // var amazon_slots = [];
+    // var ad_unit_codes = [];
+    // var ad_units = [];
+    var ad_unit_sizes = [];
+    var ad_unit_sizes_prebid = [];
+    var ad_unit_prebid_media_types = {};
+
+    // var call_prebid = true;
+    // var call_amazon = false;
+
+    var place_ad = true;
+
+    // Aangegeven ad units inladen
+    
+        if (r89.device !== 'desktop') {
+            place_ad = false;
+        }
+        else if (r89.settings.stickyFooter.divIds.indexOf('r89-desktop-hpa-atf') !== -1) {
+
+            console.log("LOAD FLOORAD");
+            console.log(r89.device);
+            console.log(r89.screenWidth);
+
+            if (r89.cookies.get(r89.settings.stickyFooter.cookieName) !== undefined) {
+                place_ad = false;
+            }
+            else if (r89.device == 'mobile' && r89.screenWidth < 360) {
+                place_ad = false;
+            }
+            else if (r89.device == 'desktop' && r89.screenWidth < 1024) {
+                place_ad = false;
+            }
+            else {
+                place_ad = true;
+            }
+        }
+        else {
+            place_ad = true;
+        }
+
+        
+        
+        
+        
+        
+        if (place_ad) {
+
+            ad_unit_sizes = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,250]);
+                    }
+                                                                if (160 <= r89.screenWidth) {
+                        ad_unit_sizes.push([160,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,300]);
+                    }
+                                                                if (120 <= r89.screenWidth) {
+                        ad_unit_sizes.push([120,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,50]);
+                    }
+                            
+            ad_unit_sizes_prebid = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,250]);
+                    }
+                                                                if (160 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([160,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,300]);
+                    }
+                                                                if (120 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([120,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,50]);
+                    }
+                            
+            
+                var selector_div_id = 'r89-desktop-hpa-atf-' + r89.settings.loopCount;
+
+                
+                                    // Count amount of times the bidder is used
+                    ++r89.prebid.bidderCounts['Desktop-300x600-ATF'];
+
+                    // Add the count to the bidder collections where needed
+                    for (var i = 0; i < r89.prebid.bids['Desktop-300x600-ATF'].length; i++) {
+
+                        if (r89.prebid.bids['Desktop-300x600-ATF'][i].bidder == 'appnexus') {
+                            r89.prebid.bids['Desktop-300x600-ATF'][i].params.keywords = {
+                                ad_unit_count: r89.prebid.bidderCounts['Desktop-300x600-ATF']
+                            };
+                        }
+                    }
+
+                    // Clone item into ad unit bid array
+                    r89.prebid.adunitBids.push(JSON.parse(JSON.stringify(r89.prebid.bids['Desktop-300x600-ATF']) ) );
+
+                    var prebid_bidder = r89.prebid.adunitBids[r89.prebid.adunitBids.length - 1];
+                
+                if (r89.placeAdUnit(
+                    'section.lateral > div > div.bloque.publi',
+                    'insertBefore',
+                    selector_div_id,
+                    'Desktop-HPA-ATF',
+                    'inbestiacom/inbestiacom-Desktop-HPA-ATF',
+                    prebid_bidder,
+                    1,
+                    ad_unit_sizes,
+                    ad_unit_sizes_prebid,
+                    false,
+                    1,
+                    false,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0
+                ) ) {
+
+                    // Amazon slot pushen wanneer deze actief staat
+                                            if (ad_unit_sizes_prebid.length > 0) {
+                            r89.insertAdUnits.amazon_slots.push({
+                                slotID: selector_div_id,
+                                sizes: ad_unit_sizes_prebid,
+                                slotName: '/' + r89.settings.gamTagNetworkId + '/inbestiacom/inbestiacom-Desktop-HPA-ATF'
+                            });
+
+                            r89.insertAdUnits.call_amazon = true;
+                        }
+                    
+                    // Prebid slot pushen wanneer deze actief staat
+                    
+                        r89.insertAdUnits.ad_unit_codes.push(selector_div_id);
+
+                        ad_unit_prebid_media_types = {};
+
+                        
+                        if (ad_unit_sizes_prebid.length > 0) {
+                            ad_unit_prebid_media_types.banner = {
+                                sizes: ad_unit_sizes_prebid
+                            };
+                        }
+
+                        r89.insertAdUnits.ad_units.push({
+                            code: selector_div_id,
+                                                        mediaTypes: ad_unit_prebid_media_types,
+                            bids: prebid_bidder
+                        });
+
+                        r89.insertAdUnits.call_prebid = true;
+                                    }
+
+                    }
+    
+        if (r89.device !== 'mobile') {
+            place_ad = false;
+        }
+        else if (r89.settings.stickyFooter.divIds.indexOf('r89-mobile-billboard-top') !== -1) {
+
+            console.log("LOAD FLOORAD");
+            console.log(r89.device);
+            console.log(r89.screenWidth);
+
+            if (r89.cookies.get(r89.settings.stickyFooter.cookieName) !== undefined) {
+                place_ad = false;
+            }
+            else if (r89.device == 'mobile' && r89.screenWidth < 360) {
+                place_ad = false;
+            }
+            else if (r89.device == 'desktop' && r89.screenWidth < 1024) {
+                place_ad = false;
+            }
+            else {
+                place_ad = true;
+            }
+        }
+        else {
+            place_ad = true;
+        }
+
+        
+        
+        
+        
+        
+        if (place_ad) {
+
+            ad_unit_sizes = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,250]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,240]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,100]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,300]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,100]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,50]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,50]);
+                    }
+                                                                ad_unit_sizes.push("fluid");
+                            
+            ad_unit_sizes_prebid = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,250]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,240]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,100]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,300]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,100]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,50]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,50]);
+                    }
+                            
+            
+                var selector_div_id = 'r89-mobile-billboard-top-' + r89.settings.loopCount;
+
+                
+                                    // Count amount of times the bidder is used
+                    ++r89.prebid.bidderCounts['Mobile-320x100-Top'];
+
+                    // Add the count to the bidder collections where needed
+                    for (var i = 0; i < r89.prebid.bids['Mobile-320x100-Top'].length; i++) {
+
+                        if (r89.prebid.bids['Mobile-320x100-Top'][i].bidder == 'appnexus') {
+                            r89.prebid.bids['Mobile-320x100-Top'][i].params.keywords = {
+                                ad_unit_count: r89.prebid.bidderCounts['Mobile-320x100-Top']
+                            };
+                        }
+                    }
+
+                    // Clone item into ad unit bid array
+                    r89.prebid.adunitBids.push(JSON.parse(JSON.stringify(r89.prebid.bids['Mobile-320x100-Top']) ) );
+
+                    var prebid_bidder = r89.prebid.adunitBids[r89.prebid.adunitBids.length - 1];
+                
+                if (r89.placeAdUnit(
+                    '#wrap > section > div > div > div.central > div > div > div',
+                    'insertAfter',
+                    selector_div_id,
+                    'Mobile-Billboard-Top',
+                    'inbestiacom/inbestiacom-mobile-billboard-top',
+                    prebid_bidder,
+                    1,
+                    ad_unit_sizes,
+                    ad_unit_sizes_prebid,
+                    false,
+                    1,
+                    false,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0
+                ) ) {
+
+                    // Amazon slot pushen wanneer deze actief staat
+                                            if (ad_unit_sizes_prebid.length > 0) {
+                            r89.insertAdUnits.amazon_slots.push({
+                                slotID: selector_div_id,
+                                sizes: ad_unit_sizes_prebid,
+                                slotName: '/' + r89.settings.gamTagNetworkId + '/inbestiacom/inbestiacom-mobile-billboard-top'
+                            });
+
+                            r89.insertAdUnits.call_amazon = true;
+                        }
+                    
+                    // Prebid slot pushen wanneer deze actief staat
+                    
+                        r89.insertAdUnits.ad_unit_codes.push(selector_div_id);
+
+                        ad_unit_prebid_media_types = {};
+
+                        
+                        if (ad_unit_sizes_prebid.length > 0) {
+                            ad_unit_prebid_media_types.banner = {
+                                sizes: ad_unit_sizes_prebid
+                            };
+                        }
+
+                        r89.insertAdUnits.ad_units.push({
+                            code: selector_div_id,
+                                                        mediaTypes: ad_unit_prebid_media_types,
+                            bids: prebid_bidder
+                        });
+
+                        r89.insertAdUnits.call_prebid = true;
+                                    }
+
+                    }
+    
+        if (r89.device !== 'mobile') {
+            place_ad = false;
+        }
+        else if (r89.settings.stickyFooter.divIds.indexOf('r89-mobile-sticky-footer') !== -1) {
+
+            console.log("LOAD FLOORAD");
+            console.log(r89.device);
+            console.log(r89.screenWidth);
+
+            if (r89.cookies.get(r89.settings.stickyFooter.cookieName) !== undefined) {
+                place_ad = false;
+            }
+            else if (r89.device == 'mobile' && r89.screenWidth < 360) {
+                place_ad = false;
+            }
+            else if (r89.device == 'desktop' && r89.screenWidth < 1024) {
+                place_ad = false;
+            }
+            else {
+                place_ad = true;
+            }
+        }
+        else {
+            place_ad = true;
+        }
+
+        
+        
+        
+        
+        
+        if (place_ad) {
+
+            ad_unit_sizes = [];
+
+                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,100]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,100]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,50]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,50]);
+                    }
+                            
+            ad_unit_sizes_prebid = [];
+
+                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,100]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,100]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,50]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,50]);
+                    }
+                            
+            
+                var selector_div_id = 'r89-mobile-sticky-footer-' + r89.settings.loopCount;
+
+                
+                                    // Count amount of times the bidder is used
+                    ++r89.prebid.bidderCounts['Mobile-Sticky-320x100'];
+
+                    // Add the count to the bidder collections where needed
+                    for (var i = 0; i < r89.prebid.bids['Mobile-Sticky-320x100'].length; i++) {
+
+                        if (r89.prebid.bids['Mobile-Sticky-320x100'][i].bidder == 'appnexus') {
+                            r89.prebid.bids['Mobile-Sticky-320x100'][i].params.keywords = {
+                                ad_unit_count: r89.prebid.bidderCounts['Mobile-Sticky-320x100']
+                            };
+                        }
+                    }
+
+                    // Clone item into ad unit bid array
+                    r89.prebid.adunitBids.push(JSON.parse(JSON.stringify(r89.prebid.bids['Mobile-Sticky-320x100']) ) );
+
+                    var prebid_bidder = r89.prebid.adunitBids[r89.prebid.adunitBids.length - 1];
+                
+                if (r89.placeAdUnit(
+                    'body',
+                    'appendChild',
+                    selector_div_id,
+                    'Mobile-Footer-Sticky',
+                    'inbestiacom/inbestiacom-mobile-sticky-footer',
+                    prebid_bidder,
+                    1,
+                    ad_unit_sizes,
+                    ad_unit_sizes_prebid,
+                    {"textAlign":" center","margin":" 0 auto"},
+                    1,
+                    {"position":" fixed","bottom":" 0","left":" 0","right":" 0","maxWidth":" 100%","zIndex":" 9999","backgroundColor":" rgba(255, 255, 255, 1)","borderTop":" 1px solid #ccc","padding":" 10px 0 0 0","boxSizing":" content-box"},
+                    0,
+                    0,
+                    1,
+                    0,
+                    0
+                ) ) {
+
+                    // Amazon slot pushen wanneer deze actief staat
+                                            if (ad_unit_sizes_prebid.length > 0) {
+                            r89.insertAdUnits.amazon_slots.push({
+                                slotID: selector_div_id,
+                                sizes: ad_unit_sizes_prebid,
+                                slotName: '/' + r89.settings.gamTagNetworkId + '/inbestiacom/inbestiacom-mobile-sticky-footer'
+                            });
+
+                            r89.insertAdUnits.call_amazon = true;
+                        }
+                    
+                    // Prebid slot pushen wanneer deze actief staat
+                    
+                        r89.insertAdUnits.ad_unit_codes.push(selector_div_id);
+
+                        ad_unit_prebid_media_types = {};
+
+                        
+                        if (ad_unit_sizes_prebid.length > 0) {
+                            ad_unit_prebid_media_types.banner = {
+                                sizes: ad_unit_sizes_prebid
+                            };
+                        }
+
+                        r89.insertAdUnits.ad_units.push({
+                            code: selector_div_id,
+                                                        mediaTypes: ad_unit_prebid_media_types,
+                            bids: prebid_bidder
+                        });
+
+                        r89.insertAdUnits.call_prebid = true;
+                                    }
+
+                    }
+    
+        if (r89.device !== 'mobile') {
+            place_ad = false;
+        }
+        else if (r89.settings.stickyFooter.divIds.indexOf('r89-mobile-rectangle-low') !== -1) {
+
+            console.log("LOAD FLOORAD");
+            console.log(r89.device);
+            console.log(r89.screenWidth);
+
+            if (r89.cookies.get(r89.settings.stickyFooter.cookieName) !== undefined) {
+                place_ad = false;
+            }
+            else if (r89.device == 'mobile' && r89.screenWidth < 360) {
+                place_ad = false;
+            }
+            else if (r89.device == 'desktop' && r89.screenWidth < 1024) {
+                place_ad = false;
+            }
+            else {
+                place_ad = true;
+            }
+        }
+        else {
+            place_ad = true;
+        }
+
+        
+        
+        
+        
+        
+        if (place_ad) {
+
+            ad_unit_sizes = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,250]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,240]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,100]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,100]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes.push([320,50]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,50]);
+                    }
+                            
+            ad_unit_sizes_prebid = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,250]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,240]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,100]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,100]);
+                    }
+                                                                if (320 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([320,50]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,50]);
+                    }
+                            
+            
+                var selectors = r89.selectorWindow.querySelectorAll('#wrap > section > div > div > div.central > div > div > section.principal > article > div.contenido > div.extra > div.likers, #wrap > section > div > div > div.central > div > div > section.principal');
+                var selectors_count = 1;
+
+                selectors.forEach(function(selector) {
+
+                    var selector_div_id = 'r89-mobile-rectangle-low-' + r89.settings.loopCount + '-' + selectors_count;
+
+                    
+                                            // Count amount of times the bidder is used
+                        ++r89.prebid.bidderCounts['Mobile-300x250-Low'];
+
+                        // Add the count to the bidder collections where needed
+                        for (var i = 0; i < r89.prebid.bids['Mobile-300x250-Low'].length; i++) {
+
+                            if (r89.prebid.bids['Mobile-300x250-Low'][i].bidder == 'appnexus') {
+                                r89.prebid.bids['Mobile-300x250-Low'][i].params.keywords = {
+                                    ad_unit_count: r89.prebid.bidderCounts['Mobile-300x250-Low']
+                                };
+                            }
+                        }
+
+                        // Clone item into ad unit bid array
+                        r89.prebid.adunitBids.push(JSON.parse(JSON.stringify(r89.prebid.bids['Mobile-300x250-Low']) ) );
+
+                        var prebid_bidder = r89.prebid.adunitBids[r89.prebid.adunitBids.length - 1];
+                    
+                    if (r89.placeAdUnit(
+                        selector,
+                        'insertAfter',
+                        selector_div_id,
+                        'Mobile-Rectangle-Low',
+                        'inbestiacom/inbestiacom-mobile-rectangle-low',
+                        prebid_bidder,
+                        1,
+                        ad_unit_sizes,
+                        ad_unit_sizes_prebid,
+                        false,
+                        1,
+                        false,
+                        0,
+                        0,
+                        1,
+                        0,
+                        0
+                    ) ) {
+
+                        // Amazon slot pushen wanneer deze actief staat
+                                                    if (ad_unit_sizes_prebid.length > 0) {
+                                r89.insertAdUnits.amazon_slots.push({
+                                    slotID: selector_div_id,
+                                    sizes: ad_unit_sizes_prebid,
+                                    slotName: '/' + r89.settings.gamTagNetworkId + '/inbestiacom/inbestiacom-mobile-rectangle-low'
+                                });
+
+                                r89.insertAdUnits.call_amazon = true;
+                            }
+                        
+                        // Prebid slot pushen wanneer deze actief staat
+                        
+                            r89.insertAdUnits.ad_unit_codes.push(selector_div_id);
+
+                            ad_unit_prebid_media_types = {};
+
+                            
+                            if (ad_unit_sizes_prebid.length > 0) {
+                                ad_unit_prebid_media_types.banner = {
+                                    sizes: ad_unit_sizes_prebid
+                                };
+                            }
+
+                            // Ad ad unit array
+                            r89.insertAdUnits.ad_units.push({
+                                code: selector_div_id,
+                                                                mediaTypes: ad_unit_prebid_media_types,
+                                // bids: r89.prebid.bids['Mobile-300x250-Low']
+                                bids: prebid_bidder
+                            });
+
+                            r89.insertAdUnits.call_prebid = true;
+                                            }
+
+                    ++selectors_count;
+                });
+
+                    }
+    
+        if (r89.device !== 'desktop') {
+            place_ad = false;
+        }
+        else if (r89.settings.stickyFooter.divIds.indexOf('r89-desktop-billboard-atf') !== -1) {
+
+            console.log("LOAD FLOORAD");
+            console.log(r89.device);
+            console.log(r89.screenWidth);
+
+            if (r89.cookies.get(r89.settings.stickyFooter.cookieName) !== undefined) {
+                place_ad = false;
+            }
+            else if (r89.device == 'mobile' && r89.screenWidth < 360) {
+                place_ad = false;
+            }
+            else if (r89.device == 'desktop' && r89.screenWidth < 1024) {
+                place_ad = false;
+            }
+            else {
+                place_ad = true;
+            }
+        }
+        else {
+            place_ad = true;
+        }
+
+                if (r89.screenWidth < 970) {
+            place_ad = false;
+            r89.log("Ad Unit: Min screen width of 970 not reached - r89-desktop-billboard-atf");
+        }
+        
+        
+        
+        
+        
+        if (place_ad) {
+
+            ad_unit_sizes = [];
+
+                                                ad_unit_sizes.push([970,250]);
+                                                                ad_unit_sizes.push([728,90]);
+                                                                ad_unit_sizes.push([980,250]);
+                                                                ad_unit_sizes.push([980,90]);
+                                                                ad_unit_sizes.push([970,90]);
+                                                                ad_unit_sizes.push([960,50]);
+                            
+            ad_unit_sizes_prebid = [];
+
+                                                ad_unit_sizes_prebid.push([970,250]);
+                                                                ad_unit_sizes_prebid.push([728,90]);
+                                                                ad_unit_sizes_prebid.push([980,250]);
+                                                                ad_unit_sizes_prebid.push([980,90]);
+                                                                ad_unit_sizes_prebid.push([970,90]);
+                                                                ad_unit_sizes_prebid.push([960,50]);
+                            
+            
+                var selector_div_id = 'r89-desktop-billboard-atf-' + r89.settings.loopCount;
+
+                
+                                    // Count amount of times the bidder is used
+                    ++r89.prebid.bidderCounts['Desktop-970x250-ATF'];
+
+                    // Add the count to the bidder collections where needed
+                    for (var i = 0; i < r89.prebid.bids['Desktop-970x250-ATF'].length; i++) {
+
+                        if (r89.prebid.bids['Desktop-970x250-ATF'][i].bidder == 'appnexus') {
+                            r89.prebid.bids['Desktop-970x250-ATF'][i].params.keywords = {
+                                ad_unit_count: r89.prebid.bidderCounts['Desktop-970x250-ATF']
+                            };
+                        }
+                    }
+
+                    // Clone item into ad unit bid array
+                    r89.prebid.adunitBids.push(JSON.parse(JSON.stringify(r89.prebid.bids['Desktop-970x250-ATF']) ) );
+
+                    var prebid_bidder = r89.prebid.adunitBids[r89.prebid.adunitBids.length - 1];
+                
+                if (r89.placeAdUnit(
+                    '#wrap > section',
+                    'insertBefore',
+                    selector_div_id,
+                    'Desktop-Billboard-ATF',
+                    'inbestiacom/Inbestiacom-Desktop-Billboard-ATF',
+                    prebid_bidder,
+                    1,
+                    ad_unit_sizes,
+                    ad_unit_sizes_prebid,
+                    {"margin":" 0 auto","textAlign":" center"},
+                    1,
+                    {"textAlign":" center"},
+                    0,
+                    0,
+                    1,
+                    0,
+                    0
+                ) ) {
+
+                    // Amazon slot pushen wanneer deze actief staat
+                                            if (ad_unit_sizes_prebid.length > 0) {
+                            r89.insertAdUnits.amazon_slots.push({
+                                slotID: selector_div_id,
+                                sizes: ad_unit_sizes_prebid,
+                                slotName: '/' + r89.settings.gamTagNetworkId + '/inbestiacom/Inbestiacom-Desktop-Billboard-ATF'
+                            });
+
+                            r89.insertAdUnits.call_amazon = true;
+                        }
+                    
+                    // Prebid slot pushen wanneer deze actief staat
+                    
+                        r89.insertAdUnits.ad_unit_codes.push(selector_div_id);
+
+                        ad_unit_prebid_media_types = {};
+
+                        
+                        if (ad_unit_sizes_prebid.length > 0) {
+                            ad_unit_prebid_media_types.banner = {
+                                sizes: ad_unit_sizes_prebid
+                            };
+                        }
+
+                        r89.insertAdUnits.ad_units.push({
+                            code: selector_div_id,
+                                                        mediaTypes: ad_unit_prebid_media_types,
+                            bids: prebid_bidder
+                        });
+
+                        r89.insertAdUnits.call_prebid = true;
+                                    }
+
+                    }
+    
+        if (r89.device !== 'desktop') {
+            place_ad = false;
+        }
+        else if (r89.settings.stickyFooter.divIds.indexOf('r89-desktop-hpa-btf') !== -1) {
+
+            console.log("LOAD FLOORAD");
+            console.log(r89.device);
+            console.log(r89.screenWidth);
+
+            if (r89.cookies.get(r89.settings.stickyFooter.cookieName) !== undefined) {
+                place_ad = false;
+            }
+            else if (r89.device == 'mobile' && r89.screenWidth < 360) {
+                place_ad = false;
+            }
+            else if (r89.device == 'desktop' && r89.screenWidth < 1024) {
+                place_ad = false;
+            }
+            else {
+                place_ad = true;
+            }
+        }
+        else {
+            place_ad = true;
+        }
+
+        
+        
+        
+        
+        
+        if (place_ad) {
+
+            ad_unit_sizes = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,250]);
+                    }
+                                                                if (160 <= r89.screenWidth) {
+                        ad_unit_sizes.push([160,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,300]);
+                    }
+                                                                if (120 <= r89.screenWidth) {
+                        ad_unit_sizes.push([120,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes.push([300,50]);
+                    }
+                                                                ad_unit_sizes.push("fluid");
+                            
+            ad_unit_sizes_prebid = [];
+
+                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,250]);
+                    }
+                                                                if (160 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([160,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,300]);
+                    }
+                                                                if (120 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([120,600]);
+                    }
+                                                                if (300 <= r89.screenWidth) {
+                        ad_unit_sizes_prebid.push([300,50]);
+                    }
+                            
+            
+                var selector_div_id = 'r89-desktop-hpa-btf-' + r89.settings.loopCount;
+
+                
+                                    // Count amount of times the bidder is used
+                    ++r89.prebid.bidderCounts['Desktop-300x600-BTF'];
+
+                    // Add the count to the bidder collections where needed
+                    for (var i = 0; i < r89.prebid.bids['Desktop-300x600-BTF'].length; i++) {
+
+                        if (r89.prebid.bids['Desktop-300x600-BTF'][i].bidder == 'appnexus') {
+                            r89.prebid.bids['Desktop-300x600-BTF'][i].params.keywords = {
+                                ad_unit_count: r89.prebid.bidderCounts['Desktop-300x600-BTF']
+                            };
+                        }
+                    }
+
+                    // Clone item into ad unit bid array
+                    r89.prebid.adunitBids.push(JSON.parse(JSON.stringify(r89.prebid.bids['Desktop-300x600-BTF']) ) );
+
+                    var prebid_bidder = r89.prebid.adunitBids[r89.prebid.adunitBids.length - 1];
+                
+                if (r89.placeAdUnit(
+                    '#wrap > section > div > div > div.central > div > div > section.lateral > div > div:nth-child(3) > div.tab-content',
+                    'insertAfter',
+                    selector_div_id,
+                    'Desktop-HPA-BTF',
+                    'inbestiacom/Inbestiacom-Desktop-HPA-BTF',
+                    prebid_bidder,
+                    1,
+                    ad_unit_sizes,
+                    ad_unit_sizes_prebid,
+                    false,
+                    1,
+                    false,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0
+                ) ) {
+
+                    // Amazon slot pushen wanneer deze actief staat
+                                            if (ad_unit_sizes_prebid.length > 0) {
+                            r89.insertAdUnits.amazon_slots.push({
+                                slotID: selector_div_id,
+                                sizes: ad_unit_sizes_prebid,
+                                slotName: '/' + r89.settings.gamTagNetworkId + '/inbestiacom/Inbestiacom-Desktop-HPA-BTF'
+                            });
+
+                            r89.insertAdUnits.call_amazon = true;
+                        }
+                    
+                    // Prebid slot pushen wanneer deze actief staat
+                    
+                        r89.insertAdUnits.ad_unit_codes.push(selector_div_id);
+
+                        ad_unit_prebid_media_types = {};
+
+                        
+                        if (ad_unit_sizes_prebid.length > 0) {
+                            ad_unit_prebid_media_types.banner = {
+                                sizes: ad_unit_sizes_prebid
+                            };
+                        }
+
+                        r89.insertAdUnits.ad_units.push({
+                            code: selector_div_id,
+                                                        mediaTypes: ad_unit_prebid_media_types,
+                            bids: prebid_bidder
+                        });
+
+                        r89.insertAdUnits.call_prebid = true;
+                                    }
+
+                    }
+    
+    // Default placements controleren
+    
+    r89.log("Default Placements | Checking.");
+
+    var placements = r89.window.querySelectorAll("ins.r89ads");
+    var placement_count = 0;
+
+    if (placements.length > 0) {
+
+        r89.log("Default Placements | Found.");
+
+        placements.forEach(function(el) {
+
+            // Data inlezen van de slot
+            var el_ad_unit = el.dataset.adunit;
+            var el_sizes = null;
+            var el_placement = null;
+
+            // Sizes bepalen
+            if (r89.device == 'desktop') {
+                el_sizes = el.dataset.sizesDesktop;
+                el_placement = 'Desktop-Default-Placement';
+            }
+            else {
+                el_sizes = el.dataset.sizesMobile;
+                el_placement = 'Mobile-Default-Placement';
+            }
+
+            // Controleren of er ad unit data is
+            if (el_ad_unit === null || el_sizes === null || typeof el_sizes === 'undefined') {
+                return false;
+            }
+
+            if (el.getBoundingClientRect().top > 2000) {
+                el_lazy_load = 1.0;
+            }
+            else {
+                el_lazy_load = 0;
+            }
+
+            // Ad unit een ID meegeven
+            ++placement_count;
+            el.id = 'r89ads-' + r89.settings.loopCount + '-' + placement_count + '-wrapper';
+
+            r89.placeAdUnit(
+                '#' + el.id,
+                'appendChild',
+                'r89ads-' + r89.settings.loopCount + '-' + placement_count,
+                el_placement,
+                'inbestiacom',
+                false,
+                0,
+                JSON.parse(el_sizes),
+                JSON.parse(el_sizes),
+                {
+                    "text-align": "center",
+                    "margin": "0 auto"
+                },
+                0,
+                {},
+                0,
+                el_lazy_load
+            );
+        });
+    }
+
+    
+    // Set ad ready insert status
+    r89.adUnitsInserted = true;
+};
+
+r89.requestAds = function(call_prebid, call_amazon, ad_unit_codes, ad_units, amazon_slots, refresh_slots) {
+
+    console.log('Call prebid:');
+    console.log(call_prebid);
+    console.log('Call amazon:');
+    console.log(call_amazon);
+    console.log('ad_unit_codes:');
+    console.log(ad_unit_codes);
+    console.log('ad_units:');
+    console.log(ad_units);
+    console.log('amazon_slots:');
+    console.log(amazon_slots);
+    console.log('refresh_slots:');
+    console.log(refresh_slots);
+
+    // Controleren of de ad units niet al ingeladen worden door een ontbrekende disable initial load
+            if (googletag.pubads().isInitialLoadDisabled() !== true) {
+            r89.log("Ad Units: Initial load not disabled");
+            return;
+        }
+    
+    // De header bidding partners toevoegen
+    var bidders = [];
+
+    if (call_prebid) {
+        bidders.push("prebid");
+    }
+
+    // Amazon enkel oproepen wanneer nodig
+    if (call_amazon) {
+        bidders.push("a9");
+    }
+
+    if (bidders.length === 0) {
+                    r89.log("Ad Units: No bidders, refresh standard DFP ad units");
+            googletag.pubads().refresh(refresh_slots, {changeCorrelator: false});
+            return;
+            }
+
+    var requestManager = {
+        adserverRequestSent: false,
+    };
+
+    bidders.forEach(function(bidder) {
+        requestManager[bidder] = false;
+    });
+
+    // Bijhouden of alle bidders gepasseerd zijn
+    function allBiddersBack() {
+        var allBiddersBack = bidders
+            .map(function(bidder) {
+                return requestManager[bidder];
+            })
+            .filter(Boolean)
+            .length === bidders.length;
+        return allBiddersBack;
+    }
+
+    // Er is een bidder klaar, controleren of de request naar DFP eruit kan
+    function headerBidderBack(bidder) {
+        if (requestManager.adserverRequestSent === true) {
+            return;
+        }
+        if (bidder === 'a9') {
+            requestManager.a9 = true;
+        } else if (bidder === 'prebid') {
+            requestManager.prebid = true;
+        }
+
+        if (allBiddersBack()) {
+            sendAdserverRequest();
+        }
+    }
+
+    function renderOne(winningBid) {
+
+        console.log(winningBid);
+
+        if (winningBid && winningBid.adId) {
+
+            var slotDiv = document.getElementById(winningBid.adUnitCode);
+
+            if (r89.settings.skipGAM.adUnits.includes(winningBid.adUnitCode) && winningBid.cpm > r89.settings.skipGAM.floor && slotDiv) {
+
+                // Measure ad load
+                if (r89.measuredAdLoad === false) {
+                    r89.measuredAdLoad = true;
+                    r89.measure('website', 'ads_load');
+                }
+
+                let iframe = document.createElement('iframe');
+                iframe.setAttribute('scrolling', 'no');
+                iframe.setAttribute('marginheight', '0');
+                iframe.setAttribute('marginwidth', '0');
+                iframe.setAttribute('frameborder', '0');
+                iframe.style.cssText = 'border: 0; padding: 0; margin: 0';
+
+                slotDiv.appendChild(iframe);
+
+                var iframeDoc = iframe.contentWindow.document;
+                r89_pbjs.renderAd(iframeDoc, winningBid.adId);
+
+                // Make floorad
+                if (r89.settings.stickyFooter.divIds.indexOf(winningBid.adUnitCode) !== -1) {
+
+                    // Place capping cookies
+                    r89.stickyFooter.placeCookies();
+
+                    // Get parent element
+                    var slotDivParent = slotDiv.parentNode;
+
+                    if (r89.settings.stickyFooter.prebidBidderCodesFilter.indexOf(winningBid.bidderCode) === -1) {
+
+                        // Protect against large ads
+                        slotDiv.style.maxHeight = r89.settings.stickyFooter.maxHeight;
+                        slotDiv.style.overflow = "hidden";
+
+                        // Check if there is already a close button
+                        var stickyCloseButtonExist = slotDivParent.querySelector("." + r89.settings.stickyFooter.closeButtonClass);
+
+                        if (stickyCloseButtonExist == null) {
+
+                            var stickyFooterWidth = winningBid.width;
+                            var stickyFooterHeight = winningBid.height;
+
+                            // Create close button
+                            r89.stickyFooter.closeButton(slotDivParent);
+
+                            if ((r89.device == 'desktop' && r89.settings.stickyFooter.desktopTimeout > 0) || (r89.device == 'mobile' && r89.settings.stickyFooter.mobileTimeout > 0) ) {
+
+                                setTimeout(function() {
+
+                                    if (slotDivParent !== null) {
+
+                                        slotDivParent.style.transition = "bottom 0.5s ease-in-out";
+                                        slotDivParent.style.bottom = "-" + stickyFooterHeight + "px";
+
+                                        setTimeout(function() {
+                                            closeStickyFooterButton.style.display = "none";
+                                            slotDivParent.style.position = "static";
+                                            slotDivParent.style.backgroundColor = "transparent";
+                                        }, 500);
+                                    }
+
+                                }, (r89.device == 'desktop' ? r89.settings.stickyFooter.desktopTimeout * 1000 : r89.settings.stickyFooter.mobileTimeout * 1000) );
+                            }
+                        }
+                    }
+                    else {
+                        slotDivParent.style.display = "none";
+                    }
+                }
+            }
+        }
+    }
+
+    // De request naar DFP sturen
+    function sendAdserverRequest() {
+
+        if (requestManager.adserverRequestSent === true) {
+            return;
+        }
+
+        r89.log("Ad Units: Sent ad server request");
+
+        requestManager.adserverRequestSent = true;
+        r89_pbjs.adserverRequestSent = true;
+
+        requestManager.sendAdserverRequest = true;
+
+                    googletag.cmd.push(function() {
+                r89_pbjs.setTargetingForGPTAsync(ad_unit_codes);
+                googletag.pubads().refresh(refresh_slots, {changeCorrelator: false});
+            });
+        
+        r89_pbjs.que.push(function() {
+            var winners = r89_pbjs.getHighestCpmBids();
+            for (var i = 0; i < winners.length; i++) {
+                renderOne(winners[i]);
+            }
+        });
+
+        window.aax = window.aax || {};
+        window.aax.cmd= window.aax.cmd || [];
+        window.aax.cmd.push(function () {
+            if (window.aax.getAbpStatus()) {
+                r89.log("AAX: Adblock running.");
+                window.googletag = window.googletag || {};
+                window.googletag.cmd = window.googletag.cmd || [];
+                window.googletag.cmd.push(function () {
+                    googletag.pubads().refresh(refresh_slots);
+                });
+            }
+        });
+    }
+
+    // De Amazon bids ophalen
+    if (call_amazon) {
+        apstag.fetchBids({
+            slots: amazon_slots,
+            timeout: r89.timeouts.prebid
+        }, function(bids) {
+            googletag.cmd.push(function() {
+                r89.log("Ad Units: Apstag bids back handler");
+                apstag.setDisplayBids();
+                headerBidderBack('a9');
+            });
+        });
+    }
+
+    // De prebid bids ophalen
+    if (call_prebid) {
+        r89_pbjs.que.push(function() {
+
+            r89.log("Ad Units: Push PBJS");
+
+            r89_pbjs.requestBids({
+                timeout: r89.timeouts.prebid,
+                // adUnitCodes: ad_unit_codes,
+                adUnits: ad_units,
+                bidsBackHandler: function(bids) {
+                    r89.log("Ad Units: PBJS bids back handler");
+                    headerBidderBack('prebid');
+                }
+            });
+        });
+    }
+
+    window.setTimeout(function() {
+        r89.log("Ad Units: Requests timeout");
+        sendAdserverRequest();
+    }, r89.timeouts.prebid * 1.25);
+};
+r89.insertCustomAdUnits = function() {
+
+    r89.log("Tags: Insert Custom Ad Units");
+
+    };
+r89.insertLotame = function() {
+
+    // Check if content value are set
+    if (r89.keyValues.lotameContentTaxonomy.length === 0) {
+        return false;
+    }
+
+    var lotameClientId = '15926';
+    var lotameTagInput = {
+        data: {
+            behaviors: {
+                genp: r89.keyValues.lotameContentTaxonomy
+            }
+        },
+        config: {
+            clientId: Number(lotameClientId)
+        }
+    };
+
+    // Lotame initialization
+    var lotameConfig = lotameTagInput.config || {};
+    var namespace = window['lotame_' + lotameConfig.clientId] = {};
+    namespace.config = lotameConfig;
+    namespace.data = lotameTagInput.data || {};
+    namespace.cmd = namespace.cmd || [];
+
+    var script = document.createElement('script');
+    script.src = 'https://tags.crwdcntrl.net/lt/c/15926/lt.min.js';
+    script.type = 'text/javascript';
+    script.async = true;
+    r89.head.appendChild(script);
+};
+r89.gptInsert = function() {
+
+    if (window.googletag && googletag.apiReady) {
+        r89.gptPublisherInitialized = true;
+        r89.log("GPT: Initialized on publisher page.")
+    }
+
+    // GPT nog niet geladen, deze toevoegen
+    if (r89.gptPublisherInitialized == false) {
+        var script = document.createElement('script');
+        script.src = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
+        script.type = 'text/javascript';
+        script.async = true;
+        r89.head.appendChild(script);
+
+        r89.log("GPT: Loaded by R89.");
+    }
+
+    // GPT config inladen
+    googletag.cmd.push(function() {
+
+        // Center all ads
+        googletag.pubads().setCentering(true);
+
+        // Website doorgeven
+        googletag.pubads().setTargeting('site', r89.settings.website);
+        googletag.pubads().setTargeting('publisher', '24');
+
+        if (r89.keyValues.iabContentTaxonomy.length > 0) {
+            googletag.pubads().setTargeting('iab_content_taxonomy', r89.keyValues.iabContentTaxonomy);
+        }
+
+        // Restricted ads
+        if (r89.restrictedAds) {
+            googletag.pubads().setTargeting('restricted', '1');
+        }
+
+                    googletag.pubads().setTargeting('yield_partners', ["2","3","5","7","1","4","6","8"]);
+        
+        
+        // Opgeven of het een preview pagina is voor testen
+        if (r89.preview) {
+            googletag.pubads().setTargeting('preview', 'yes');
+        }
+
+        // Consent signaal opgeven
+        if (r89.cmp.setRequestNonPersonalizedAds) {
+            r89.log("CMP: Set Non Personalized Ads.");
+            googletag.pubads().setRequestNonPersonalizedAds(1);
+        }
+
+        googletag.pubads().disableInitialLoad();
+        googletag.pubads().collapseEmptyDivs(true);
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+
+        // Fire ads_load event when the ads are requested
+        googletag.pubads().addEventListener('slotRequested', function(event) {
+
+            if (r89.measuredAdLoad === false) {
+                r89.measuredAdLoad = true;
+                r89.measure('website', 'ads_load');
+            }
+        });
+
+        // Bepalen wat er na het renderen gebeurt
+        googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+
+            if (event.isEmpty == false) {
+
+                // De slot ID en div ophalen
+                var slotId = event.slot.getSlotElementId();
+                var slotDiv = document.getElementById(slotId);
+
+                // Als de slot div niet bestaat, de rest overslaan (zou niet mogen gebeuren)
+                if (slotDiv === null) {
+                    return false;
+                }
+
+                // Set max size for Amazon takeovers
+                if (event.campaignId === 2541852438) {
+                    if (slotId.includes('takeover') ) {
+                        slotDiv.style.maxHeight = '250px';
+                        slotDiv.style.overflow = 'hidden';
+                    }
+                }
+
+                
+                if (slotId in r89.settings.refresh.adUnits) {
+
+                    // Check if order ID is AdX
+                    if (event.campaignId === 2371513412 || event.campaignId === 2281019490) {
+
+                        if (r89.settings.refresh.allowedHeights.indexOf(event.size[1]) === -1) {
+                            r89.settings.refresh.adUnits[slotId].useRefresh = false;
+                        }
+                        else {
+                            r89.settings.refresh.adUnits[slotId].size = event.size;
+
+                            slotDiv.style.height = r89.settings.refresh.adUnits[slotId].size[1] + "px";
+                        }
+                    }
+                    else {
+                        // When not AdX, don't refresh
+                        r89.settings.refresh.adUnits[slotId].useRefresh = false;
+
+                        r89.log("Remove ad unit from refresh list: " + slotId);
+                    }
+                }
+                
+                // Controleren of het om een sticky footer ad unit gaat om extra instellingen door te geven
+                if (r89.settings.stickyFooter.divIds.indexOf(slotId) !== -1) {
+
+                    // Place capping cookies
+                    r89.stickyFooter.placeCookies();
+
+                    // Get parent element
+                    var slotDivParent = slotDiv.parentNode;
+
+                    if (r89.settings.stickyFooter.gamOrderIdsFilter.indexOf(event.campaignId) === -1) {
+
+                        // Protect against large ads, but leave option for video native
+                        // console.log(event);
+                        if (event.size[1] == 180) {
+                            slotDiv.style.maxHeight = "180px";
+                        }
+                        else {
+                            slotDiv.style.maxHeight = r89.settings.stickyFooter.maxHeight;
+                        }
+
+                        slotDiv.style.overflow = "hidden";
+
+                        // Check if there is already a close button
+                        var stickyCloseButtonExist = slotDivParent.querySelector("." + r89.settings.stickyFooter.closeButtonClass);
+
+                        if (stickyCloseButtonExist == null) {
+
+                            // console.log(event.campaignId);
+
+                            var stickyFooterWidth = event.size[0];
+                            var stickyFooterHeight = event.size[1];
+
+                            if (event.size[0] == 1 && event.size[1] == 1) {
+                                var prebid_size = event.slot.getTargeting("hb_size");
+
+                                if (prebid_size.length > 0) {
+                                    prebid_size = prebid_size[0].split("x");
+                                    stickyFooterWidth = prebid_size[0];
+                                    stickyFooterHeight = prebid_size[1];
+                                }
+                            }
+
+                            if (stickyFooterWidth == 2 && stickyFooterHeight == 2) {
+                                slotDivParent.style.display = "none";
+                                return false;
+                            }
+
+                            // Create close button
+                            r89.stickyFooter.closeButton(slotDivParent);
+
+                            if ((r89.device == 'desktop' && r89.settings.stickyFooter.desktopTimeout > 0) || (r89.device == 'mobile' && r89.settings.stickyFooter.mobileTimeout > 0) ) {
+
+                                setTimeout(function() {
+
+                                    if (slotDivParent !== null) {
+
+                                        slotDivParent.style.transition = "bottom 0.5s ease-in-out";
+                                        slotDivParent.style.bottom = "-" + stickyFooterHeight + "px";
+
+                                        setTimeout(function() {
+                                            closeStickyFooterButton.style.display = "none";
+                                            slotDivParent.style.position = "static";
+                                            slotDivParent.style.backgroundColor = "transparent";
+                                        }, 500);
+                                    }
+
+                                }, (r89.device == 'desktop' ? r89.settings.stickyFooter.desktopTimeout * 1000 : r89.settings.stickyFooter.mobileTimeout * 1000) );
+                            }
+                        }
+                    }
+                    else {
+                        slotDivParent.style.display = "none";
+                    }
+                }
+                else if (r89.settings.stickyHeader.divIds.indexOf(slotId) !== -1) {
+
+                    if (event.size[1] <= r89.settings.stickyHeader.maxHeight && event.size[1] >= 50) {
+
+                        r89.log("Sticky header: Activate.");
+
+                        r89.log("Sticky header: Advertiser ID " + event.advertiserId);
+
+                        if (r89.settings.stickyHeader.programmaticFilter === 0 || (r89.settings.stickyHeader.gamAdvertiserIdsFilter.indexOf(event.advertiserId) === -1 && r89.settings.stickyHeader.gamOrderIdsFilter.indexOf(event.campaignId) === -1) ) {
+
+                            var slotDivParent = slotDiv.parentNode;
+
+                            slotDivParent.style.position = "sticky";
+                            slotDivParent.style.backgroundColor = r89.settings.stickyHeader.backgroundColor;
+
+                            if (r89.settings.stickyHeader.boxShadow) {
+                                slotDivParent.style.boxShadow = "0 4px 2px -2px #232f45";
+                            }
+
+                            var closeStickyHeaderButton = document.createElement('span');
+                            closeStickyHeaderButton.textContent = 'X';
+                            closeStickyHeaderButton.style.cssText = [
+                                'position: absolute;',
+                                'top: 5px;',
+                                'right: 5px;',
+                                'z-index: 9999;',
+                                'background: #000;',
+                                'border-radius: 16px;',
+                                'border-width: 2px;',
+                                'border-color: #fff;',
+                                'border-style: solid;',
+                                'width: 24px;',
+                                'height: 24px;',
+                                'color: #fff;',
+                                'font-weight: bold;',
+                                'cursor: pointer;',
+                                'line-height: 24px;',
+                                'font-size: 16px;',
+                                'font-family: helvetica;',
+                                'text-align: center;'
+                            ].join('\n');
+
+                            closeStickyHeaderButton.addEventListener("click", function() {
+                                slotDivParent.style.position = 'inherit';
+                                closeStickyHeaderButton.style.display = 'none';
+                                window.removeEventListener('scroll', r89.stickyHeaderScrollFunction);
+                            });
+
+                            var slotDivParentTopOffset = r89.getElementTopOffset(slotDivParent);
+                            var closeStickyHeaderButtonAdded = false;
+
+                            r89.stickyHeaderScrollFunction = function() {
+
+                                // r89.log("Sticky header: Scrolling...");
+
+                                if (!closeStickyHeaderButtonAdded) {
+                                    if (window.scrollY >= slotDivParentTopOffset) {
+                                        slotDivParent.appendChild(closeStickyHeaderButton);
+                                    }
+                                }
+
+                                if (window.scrollY > r89.settings.stickyHeader.scrollingDistance) {
+                                    slotDivParent.style.position = 'inherit';
+                                    closeStickyHeaderButton.style.display = 'none';
+                                    window.removeEventListener('scroll', r89.stickyHeaderScrollFunction);
+                                }
+                            };
+
+                            window.addEventListener('scroll', r89.stickyHeaderScrollFunction);
+                        }
+                    }
+                }
+
+                // Show ad label is available
+                var slotAdLabel = slotDiv.previousElementSibling;
+                if (slotAdLabel && slotAdLabel.classList.contains("r89-ad-label") ) {
+                    slotAdLabel.style.display = "block";
+                }
+            }
+        });
+
+        
+        // Decide on reload settings
+        googletag.pubads().addEventListener('impressionViewable', function (event) {
+
+            var adSlotId = event.slot.getSlotElementId();
+
+            if (adSlotId in r89.settings.refresh.adUnits) {
+
+                r89.settings.refresh.adUnits[adSlotId].viewable = true;
+
+                // r89.log(event.slot.getSlotElementId() + " viewable");
+            }
+        });
+
+        // Keep track of visibility for refresh purposes
+        googletag.pubads().addEventListener('slotVisibilityChanged', function (event) {
+
+            var adSlotId = event.slot.getSlotElementId();
+
+            if (adSlotId in r89.settings.refresh.adUnits) {
+
+                // r89.log(event.slot.getSlotElementId() + " inview for " + event.inViewPercentage + "%");
+
+                if (event.inViewPercentage > 50) {
+                    r89.settings.refresh.adUnits[adSlotId].inview = true;
+                }
+                else {
+                    r89.settings.refresh.adUnits[adSlotId].inview = false;
+                }
+
+                if (event.inViewPercentage > 50 && r89.settings.refresh.adUnits[adSlotId].timer === null) {
+
+                    r89.settings.refresh.adUnits[adSlotId].timer = window.setInterval(function() {
+                        // r89.log(event.slot.getSlotElementId() + "Timeout function: " + r89.settings.refresh.adUnits[adSlotId].timeInview);
+                        r89.settings.refresh.adUnits[adSlotId].timeInview += r89.settings.refresh.updateTime;
+                    }, r89.settings.refresh.updateTime);
+                }
+                else {
+                    window.clearInterval(r89.settings.refresh.adUnits[adSlotId].timer);
+                    r89.settings.refresh.adUnits[adSlotId].timer = null;
+                    // r89.log(event.slot.getSlotElementId() + "Cleared timer");
+                }
+            }
+        });
+            });
+};
+
+r89.pbjsInsert = function() {
+    // Prebid toevoegen
+    var script = document.createElement('script');
+    script.src = "https://tags.refinery89.com/prebid/prebid6.10.0-v2.js";
+    script.type = 'text/javascript';
+    script.async = true;
+    r89.head.appendChild(script);
+
+    // Prebid config inladen
+    r89_pbjs.que.push(function() {
+
+        // Supply chain object
+        var schain = {
+            "validation": "strict",
+            "config": {
+                "ver": "1.0",
+                "complete": 1,
+                "nodes": [
+                    {
+                        "asi": "refinery89.com",
+                        "sid": "00024",
+                        // "rid": "0925DDCB-CAB1-44C0-B595-E305023E5260",
+                        "hp": 1
+                    }
+                ]
+            }
+        };
+
+        var currencyModule = {
+            "adServerCurrency": "EUR",
+            "granularityMultiplier": 1,
+            "defaultRates": { "USD": { "EUR": 0.85, "GBP": 0.72 }}
+        }
+
+        if (r89.cmp.active && !r89.cmp.setRequestNonPersonalizedAds) {
+            r89.log("Tags: Load Prebid Config.");
+            r89_pbjs.setConfig({
+                s2sConfig: r89.prebid.s2sConfig,
+                consentManagement: {
+                    cmpApi: 'iab',
+                    timeout: r89.timeouts.prebidCmp,
+                    allowAuctionWithoutConsent: r89.cmp.allowAuctionWithoutConsent
+                },
+                priceGranularity: r89.prebid.priceGranularity,
+                improvedigital: {
+                    usePrebidSizes: true,
+                    singleRequest: true
+                },
+                outbrain: {
+                    bidderUrl: 'https://b1h.zemanta.com/api/bidder/prebid/bid/',
+                    usersyncUrl: 'https://b1h.zemanta.com/usersync/prebid'
+                },
+                rubicon: {
+                    rendererConfig: {
+                        align: 'center',
+                        position: 'append',
+                        closeButton: false,
+                        label: 'Advertisement',
+                        collapse: true
+                    }
+                },
+                schain: schain,
+                currency: currencyModule,
+                userSync: {
+                    aliasSyncEnabled: true,
+                    userIds: [
+                        {
+                            name: "unifiedId",
+                            params: {
+                                url: "//match.adsrvr.org/track/rid?ttd_pid=6aarzke&fmt=json"
+                            },
+                            storage: {
+                                type: "cookie",
+                                name: "pbjs-unifiedid",
+                                expires: 60
+                            }
+                        },
+                        {
+                            name: 'sharedId',
+                            storage: {
+                                name: '_sharedID',
+                                type: 'cookie',
+                                expires: 30
+                            }
+                        },
+                                            ],
+                    syncDelay: 5000,
+                    filterSettings: {
+                        iframe: {
+                            bidders: '*',
+                            filter: 'include'
+                        }
+                    }
+                },
+                cache: {
+                    url: 'https://prebid.adnxs.com/pbc/v1/cache'
+                },
+                targetingControls: {
+                    allowTargetingKeys: [
+                        'BIDDER',
+                        'AD_ID',
+                        'PRICE_BUCKET',
+                        'SIZE',
+                        'DEAL',
+                        'FORMAT',
+                        'UUID',
+                        'CACHE_ID',
+                        'CACHE_HOST',
+                        'title',
+                        'body',
+                        'body2',
+                        'sponsoredBy',
+                        'image',
+                        'icon',
+                        'clickUrl',
+                        'displayUrl',
+                        'cta'
+                    ]
+                },
+                appnexusAuctionKeywords: {
+                    iab_content_taxonomy: r89.keyValues.iabContentTaxonomy
+                }
+            });
+        }
+        else {
+            r89.log("Tags: Load NPA Prebid Config.");
+            r89_pbjs.setConfig({
+                s2sConfig: r89.prebid.s2sConfig,
+                priceGranularity: r89.prebid.priceGranularity,
+                improvedigital: {
+                    usePrebidSizes: true
+                },
+                schain: schain,
+                currency: currencyModule,
+                cache: {
+                    url: 'https://prebid.adnxs.com/pbc/v1/cache'
+                },
+                appnexusAuctionKeywords: {
+                    iab_content_taxonomy: r89.keyValues.iabContentTaxonomy
+                }
+            });
+        }
+
+        // Bidder specific supply chain object
+        r89_pbjs.setBidderConfig({
+            "bidders": ['weborama'],
+            "config": {
+                "schain": {
+                    "validation": "strict",
+                    "config": {
+                        "ver":"1.0",
+                        "complete": 1,
+                        "nodes": [
+                            {
+                                "asi": "refinery89.com",
+                                "sid": "00024",
+                                "hp": 1
+                            },
+                            {
+                                "asi":"weborama.nl",
+                                "sid":"10691",
+                                "hp":1
+                            }
+                        ]
+                    }
+                }
+            }
+        });
+
+        r89_pbjs.aliasBidder('improvedigital', 'weborama');
+        r89_pbjs.aliasBidder('appnexus', 'nextdaymedia');
+        r89_pbjs.aliasBidder('appnexus', 'gps_appnexus');
+        r89_pbjs.aliasBidder('appnexus', 'tl_appnexus');
+        r89_pbjs.aliasBidder('rubicon', 'tl_rubicon');
+        r89_pbjs.aliasBidder('adform', 'tl_adform');
+        r89_pbjs.aliasBidder('teads', 'tl_teads');
+        r89_pbjs.aliasBidder('pubmatic', 'tl_pubmatic');
+        r89_pbjs.aliasBidder('richaudience', 'tl_richaudience');
+        // r89_pbjs.addAdUnits(adUnits);
+
+        r89_pbjs.bidderSettings = {
+            standard: {
+                adserverTargeting: [{
+                    key: "hb_bidder",
+                    val: function(bidResponse) {
+                        return bidResponse.bidderCode;
+                    }
+                }, {
+                    key: "hb_adid",
+                    val: function(bidResponse) {
+                        return bidResponse.adId;
+                    }
+                }, {
+                    key: "hb_pb",
+                    val: function(bidResponse) {
+                        return bidResponse.pbCg;
+                    }
+                }, {
+                    key: 'hb_size',
+                    val: function (bidResponse) {
+
+                        // console.log(bidResponse);
+
+                        /*
+                        if (bidResponse.size == "1800x1000" || bidResponse.size == "970x1000") {
+                            // console.log("Bid size: " + bidResponse.size);
+                            // bidResponse.height = 250;
+                            // bidResponse.width = 970;
+                            // bidResponse.size = "970x250";
+
+                            // var bidElement = document.getElementById(bidResponse.adUnitCode);
+                            // console.log(bidElement);
+
+                            if (bidElement !== null) {
+                                bidElement.style.maxHeight = "250px";
+                                bidElement.style.overflow = "hidden";
+                            }
+
+                        }
+                        */
+                        return bidResponse.size;
+                    }
+                }, {
+                    key: 'hb_source',
+                    val: function (bidResponse) {
+                        return bidResponse.source;
+                    }
+                }, {
+                    key: 'hb_format',
+                    val: function (bidResponse) {
+                        return bidResponse.mediaType;
+                    }
+                }]
+            },
+                                                                                                                                    adyoulike: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.85;
+                        }
+                    },
+                                                                                                                                                                                                            gps_appnexus: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 1.30;
+                        }
+                    },
+                                                                                            improvedigital: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.80;
+                        }
+                    },
+                                                                                                                                                                                                                                        nextdaymedia: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.55;
+                        }
+                    },
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        tl_adform: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.92;
+                        }
+                    },
+                                                                tl_appnexus: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.92;
+                        }
+                    },
+                                                                                                                        tl_rubicon: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.92;
+                        }
+                    },
+                                                                tl_teads: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.92;
+                        }
+                    },
+                                                                                                                                                    weborama: {
+                        bidCpmAdjustment : function(bidCpm, bid) {
+                            return bidCpm * 0.75;
+                        }
+                    },
+                                    };
+
+                r89_pbjs.enableAnalytics([{
+            provider: 'adagio'
+        }]);
+
+        
+        r89_pbjs.onEvent('bidWon', function(data) {
+
+            if (data.size == "1800x1000" || data.size == "970x1000") {
+
+                var bidElement = document.getElementById(data.adUnitCode);
+                // console.log(data.adUnitCode);
+                // console.log(bidElement);
+
+                if (bidElement !== null) {
+                    console.log('Change 1800x1000 height.');
+                    bidElement.style.maxHeight = "250px";
+                    bidElement.style.overflow = "hidden";
+                }
+
+            }
+        });
+    });
+}
+
+r89.tagsLoadPrepare = function() {
+
+    // Namespace inladen
+    r89.loadNamespace();
+
+    // Key values inladen
+    r89.loadKeyValues();
+
+            googletag.cmd.push(function() {
+
+            // Content en audience targetting hier inbouwen
+            googletag.pubads().setTargeting('title_tags', r89.keyValues.titleTags);
+
+            // Soort pagina bepalen
+            if (location.pathname == "/") {
+                googletag.pubads().setTargeting('page', 'homepage');
+            }
+
+            // Screen width grouping
+            googletag.pubads().setTargeting('screen_width', r89.keyValues.screenWidth);
+        });
+    
+    // Sticky sidebar invoegen
+    if (typeof r89.insertStickySidebar === 'function') {
+        r89.insertStickySidebar();
+    }
+
+    // Insert article positions
+    if (typeof r89.articlePositions === 'function') {
+        r89.articlePositions();
+    }
+
+    // Check for prioritized custom ad units, since they might rely on the CMP
+    if (!r89.settings.prioritizeCustomAdUnits) {
+        r89.insertOnLoadAdUnits();
+    }
+};
+
+// URL filter for exact matches
+if (r89.settings.filter.blocked.urls.exact.indexOf(r89.currentUrl.path) !== -1) {
+    r89.processAds = false;
+}
+else {
+    // URL filter for partial matches
+    for (var i = 0; i < r89.settings.filter.blocked.urls.partial.length; i++) {
+        if (r89.currentUrl.href.indexOf(r89.settings.filter.blocked.urls.partial[i]) !== -1 ) {
+            r89.processAds = false;
+            break;
+        }
+    }
+}
+
+// URL filter for exact matches
+if (r89.settings.filter.restricted.urls.exact.indexOf(r89.currentUrl.path) !== -1) {
+    r89.restrictedAds = true;
+    r89.log("Tags: Restrict ads.");
+}
+else {
+    // URL filter for partial matches
+    for (var i = 0; i < r89.settings.filter.restricted.urls.partial.length; i++) {
+        if (r89.currentUrl.href.indexOf(r89.settings.filter.restricted.urls.partial[i]) !== -1 ) {
+            r89.restrictedAds = true;
+            r89.log("Tags: Restrict ads.");
+            break;
+        }
+    }
+}
+
+// Check for noAds value
+if (typeof noAds !== 'undefined' && noAds === true) {
+    r89.processAds = false;
+    r89.log("Tags: Found noAds setting.");
+}
+
+// Process afbreken als er geen ads op deze pagina horen
+if (r89.processAds === false) {
+    r89.log("Tags: Tag insert stopped.");
+}
+else {
+
+            var googletag = googletag || {};
+        googletag.cmd = googletag.cmd || [];
+    
+    var r89_pbjs = r89_pbjs || {};
+    r89_pbjs.que = r89_pbjs.que || [];
+
+    // Amazon toevoegen wanneer gevraagd
+        !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
+
+    apstag.init({
+        pubID: 'd02f0482-a50f-427c-ac01-9856371f1f6b',
+        adServer: 'googletag',
+        schain: {
+            complete: 1,
+            ver: '1.0',
+            nodes: [
+                {
+                    asi: 'refinery89.com',
+                    sid: '00024',
+                    hp: 1,
+                    name: 'SOSFE EUROPE S.L.'
+                }
+            ]
+        }
+    });
+
+    r89.log("A9: Loaded.");
+    
+            r89.gptInsert();
+    
+    // r89.pbjsInsert();
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", r89.tagsLoadPrepare);
+    } else {
+        r89.tagsLoadPrepare();
+    }
+}
+r89.readyStateTagsLoad();
+
