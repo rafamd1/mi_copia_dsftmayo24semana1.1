@@ -30,30 +30,24 @@
 # correspondientes carpetas.
 # 
 
-# In[16]:
+# In[63]:
 
 
 doc_types = ('.doc', '.docx', '.txt', '.pdf', '.xls', '.ppt', '.xlsx', '.pptx')
 img_types = ('.jpg', '.jpeg', '.png', '.svg', '.gif')
 software_types = ('.exe', '.py','.ipynb')
 
-# Define las extensiones de archivo para cada tipo
-EXTENSIONES_IMAGENES = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.svg']
-EXTENSIONES_DOCUMENTOS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt']
-EXTENSIONES_SOFTWARE = ['.exe', '.msi', '.bat', '.sh', '.app', '.apk', '.dmg', '.pkg', '.deb']
-# Aquí puedes agregar más extensiones si es necesario
-
 
 # ### 1. Crea un programa con el flujo principal y encapsúlalo en funciones.
 
-# In[17]:
+# In[64]:
 
 
 import os
 import shutil
 
 
-# In[36]:
+# In[65]:
 
 
 CARPETA_KEYNES = os.path.expanduser("c:\\Users\\rafam\\OneDrive\\Documentos\\GitHub\\mi_copia_dsftmayo24semana1.1\\semana 2 y 3\\1_Data_Analysis\\3-Sources\\Archivos\\Practica\\Keynes y el tipo de interés. Hechos acreditativos_files")
@@ -63,7 +57,7 @@ CARPETA_SOFTWARE = os.path.join(CARPETA_KEYNES, 'Software')
 CARPETA_OTROS = os.path.join(CARPETA_KEYNES, 'Otros')
 
 
-# In[37]:
+# In[66]:
 
 
 os.makedirs(CARPETA_IMAGENES, exist_ok=True)
@@ -72,14 +66,14 @@ os.makedirs(CARPETA_SOFTWARE, exist_ok=True)
 os.makedirs(CARPETA_OTROS, exist_ok=True)
 
 
-# In[38]:
+# In[67]:
 
 
 def mover_archivo(archivo, destino):
     shutil.move(os.path.join(CARPETA_KEYNES, archivo), os.path.join(destino, archivo))
 
 
-# In[39]:
+# In[68]:
 
 
 for archivo in os.listdir(CARPETA_KEYNES):
@@ -87,20 +81,20 @@ for archivo in os.listdir(CARPETA_KEYNES):
         continue
 
 
-# In[40]:
+# In[69]:
 
 
 extension = os.path.splitext(archivo)[1].lower()
 
 
-# In[41]:
+# In[70]:
 
 
 if extension in img_types:
     mover_archivo(archivo, CARPETA_IMAGENES)
 elif extension in doc_types:
     mover_archivo(archivo, CARPETA_DOCUMENTOS)
-elif extension in EXTENSIONES_SOFTWARE:
+elif extension in software_types:
     mover_archivo(archivo, CARPETA_SOFTWARE)
 else:
     mover_archivo(archivo, CARPETA_OTROS)
@@ -108,28 +102,16 @@ else:
 print("Archivos ordenados correctamente.")
 
 
-# In[42]:
+# In[71]:
 
 
 cd "c:\\Users\\rafam\\OneDrive\\Documentos\\GitHub\\mi_copia_dsftmayo24semana1.1\\semana 2 y 3\\1_Data_Analysis\\3-Sources\\Archivos\\Practica"
 
 
-# In[ ]:
+# In[72]:
 
 
-
-
-
-# In[44]:
-
-
-pyhton ejercicio_descargas.py
-
-
-# In[ ]:
-
-
-
+get_ipython().system(' jupyter nbconvert --to script ejercicio_descargas.ipynb')
 
 
 # In[ ]:
